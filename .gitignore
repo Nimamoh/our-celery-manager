@@ -2,3 +2,7 @@ __pycache__
 .venv
 .vscode
 .envrc
+.local-dev
+front/node_modules/
+front-vue/node_modules
+our-celery-manager.code-workspace

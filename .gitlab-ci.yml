@@ -1,0 +1,25 @@
+stages:
+  - 🔨 build
+
+.build-docker:
+  image: docker:stable-dind
+  stage: 🔨 build
+  variables:
+    IMAGE: ""
+    DOCKERFILE: ""
+  script:
+    - if [[ $VERSION_IMAGE == ""]]; then  echo "VERSION NOT SET"; VERSION_IMAGE=${CI_COMMIT_REF_SLUG}-snapshot; fi
+    - echo ${VERSION_IMAGE}
+    - echo $IMAGE
+    - docker build -f "${DOCKERFILE}" -t "${IMAGE}" .
+    - echo ${REGISTRY_PASSWORD} | docker login ${REGISTRY} -u ${REGISTRY_USER} --password-stdin
+    - docker tag ${IMAGE} ${IMAGE}:${VERSION_IMAGE}
+    - echo "push ${IMAGE}:${VERSION_IMAGE}" && docker push ${IMAGE}:${VERSION_IMAGE}
+
+docker-build:
+  extends: .build-docker
+  variables:
+    IMAGE: ${REGISTRY}our-celery-manager/${CI_COMMIT_REF_SLUG}
+    Dockerfile: Dockerfile
+  before_script:
+      - export VERSION_IMAGE="${CI_COMMIT_SHA:0:8}-snapshot"
