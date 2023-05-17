@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centre de contrôle pour celery</title>
+</head>
+<body>
+
+    <h1>{{ settings.application_name }}</h1>
+    <h2>Result backend: {{ settings.backend }}</h2>
+
+    <table>
+        <thead>
+            <th>Tâche id</th>
+            <th>Status</th>
+        </thead>
+
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td>{{ result.task_id }}</td>
+                <td>{{ result.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
