@@ -8,6 +8,7 @@ export default defineConfig({
   plugins: [
     vue(),
   ],
+  base: './', // XXX: important pour servir depuis un path-prefix
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
