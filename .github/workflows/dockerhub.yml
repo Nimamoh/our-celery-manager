@@ -31,4 +31,5 @@ jobs:
           --platform linux/amd64,linux/arm64 \
           --push \
           --tag nimamoh/our-celery-manager:${{ github.ref_name }} \
+          --tag nimamoh/our-celery-manager:latest \
           ./api/.
