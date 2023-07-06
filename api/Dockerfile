@@ -12,5 +12,8 @@ RUN apk add --no-cache build-base \
 
 COPY ./app /code/app
 
+ARG VERSION=development
+RUN echo "$VERSION" > /code/app/VERSION
+
 # EXPOSE
 CMD [ "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80" ]

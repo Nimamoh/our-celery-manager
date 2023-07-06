@@ -1,25 +1,32 @@
 from dataclasses import dataclass
 from pydantic import BaseSettings
+from . import _content_of_version_or
 
 from urllib.parse import urlparse
 
 @dataclass
 class SettingsApiResponse:
-    root_path: str
     application_name: str
+    version: str
     broker: str | None
     backend: str | None
 
 class Settings(BaseSettings):
 
-    """Le chemin prefixe de l'application"""
     root_path: str = "/"
+    """Prefix path of the application"""
 
     application_name: str = "Our celery manager"
-    """L'adresse du broker"""
+    """Name of the app"""
+
+    version: str = _content_of_version_or()
+    """Version of the app"""
+
     broker: str
-    """Le backend url à utiliser pour récupérer les résultats"""
+    """The broker url to send tasks to"""
+
     backend: str
+    """The backend url to retrieve task results"""
 
     
     def hiding_passwords(self):

@@ -21,28 +21,28 @@ import { exists, mapValues } from '../runtime';
 export interface SettingsApiResponse {
     /**
      * 
-     * @type {string}
+     * @type {any}
      * @memberof SettingsApiResponse
      */
-    root_path: string;
+    application_name: any | null;
     /**
      * 
-     * @type {string}
+     * @type {any}
      * @memberof SettingsApiResponse
      */
-    application_name: string;
+    version: any | null;
     /**
      * 
-     * @type {string}
+     * @type {any}
      * @memberof SettingsApiResponse
      */
-    broker: string;
+    broker: any | null;
     /**
      * 
-     * @type {string}
+     * @type {any}
      * @memberof SettingsApiResponse
      */
-    backend: string;
+    backend: any | null;
 }
 
 /**
@@ -50,8 +50,8 @@ export interface SettingsApiResponse {
  */
 export function instanceOfSettingsApiResponse(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "root_path" in value;
     isInstance = isInstance && "application_name" in value;
+    isInstance = isInstance && "version" in value;
     isInstance = isInstance && "broker" in value;
     isInstance = isInstance && "backend" in value;
 
@@ -68,8 +68,8 @@ export function SettingsApiResponseFromJSONTyped(json: any, ignoreDiscriminator:
     }
     return {
         
-        'root_path': json['root_path'],
         'application_name': json['application_name'],
+        'version': json['version'],
         'broker': json['broker'],
         'backend': json['backend'],
     };
@@ -84,8 +84,8 @@ export function SettingsApiResponseToJSON(value?: SettingsApiResponse | null): a
     }
     return {
         
-        'root_path': value.root_path,
         'application_name': value.application_name,
+        'version': value.version,
         'broker': value.broker,
         'backend': value.backend,
     };

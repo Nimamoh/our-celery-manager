@@ -2,7 +2,6 @@ apis/DefaultApi.ts
 apis/index.ts
 index.ts
 models/HTTPValidationError.ts
-models/LocationInner.ts
 models/SettingsApiResponse.ts
 models/Status.ts
 models/TaskResult.ts

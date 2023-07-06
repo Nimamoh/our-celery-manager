@@ -23,10 +23,10 @@ const info = inject('info') as Ref<Settings | null>
       <Toast />
       <ConfirmDialog />
 
-      <h1>{{ info?.application_name }}</h1>
+      <h1>{{ info?.application_name }} <span style="font-size: .5em;">{{ info?.version }}</span></h1>
 
-      <h2>{{ info?.broker }}</h2>
-      <h2>{{ info?.backend }}</h2>
+      <h3>{{ info?.broker }}</h3>
+      <h3>{{ info?.backend }}</h3>
 
       <TabMenu :model="items" />
 

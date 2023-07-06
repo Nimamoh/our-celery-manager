@@ -29,14 +29,14 @@ import {
 } from '../models/index';
 
 export interface CloneAndSendCloneAndSendIdPostRequest {
-    id: string;
+    id: any;
 }
 
 export interface TaskResultPageResultsPageGetRequest {
-    n?: number;
-    size?: number;
-    sort?: Array<string>;
-    search?: Array<string>;
+    n?: any;
+    size?: any;
+    sort?: any;
+    search?: any;
 }
 
 /**
@@ -107,36 +107,6 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
-     * Root
-     */
-    async rootGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<any>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
-    }
-
-    /**
-     * Root
-     */
-    async rootGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
-        const response = await this.rootGetRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
      * Task Result Page
      */
     async taskResultPageResultsPageGetRaw(requestParameters: TaskResultPageResultsPageGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TaskResultPage>> {
@@ -150,11 +120,11 @@ export class DefaultApi extends runtime.BaseAPI {
             queryParameters['size'] = requestParameters.size;
         }
 
-        if (requestParameters.sort) {
+        if (requestParameters.sort !== undefined) {
             queryParameters['sort'] = requestParameters.sort;
         }
 
-        if (requestParameters.search) {
+        if (requestParameters.search !== undefined) {
             queryParameters['search'] = requestParameters.search;
         }
 

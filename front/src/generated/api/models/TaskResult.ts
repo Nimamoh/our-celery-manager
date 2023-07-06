@@ -28,16 +28,16 @@ import {
 export interface TaskResult {
     /**
      * 
-     * @type {string}
+     * @type {any}
      * @memberof TaskResult
      */
-    task_id: string;
+    task_id: any | null;
     /**
      * 
-     * @type {string}
+     * @type {any}
      * @memberof TaskResult
      */
-    name: string;
+    name: any | null;
     /**
      * 
      * @type {Status}
@@ -46,40 +46,40 @@ export interface TaskResult {
     status: Status;
     /**
      * 
-     * @type {Date}
+     * @type {any}
      * @memberof TaskResult
      */
-    date_done: Date;
+    date_done: any | null;
     /**
      * 
-     * @type {string}
+     * @type {any}
      * @memberof TaskResult
      */
-    traceback: string;
+    traceback: any | null;
     /**
      * 
-     * @type {string}
+     * @type {any}
      * @memberof TaskResult
      */
-    queue: string;
+    queue: any | null;
     /**
      * 
-     * @type {Blob}
+     * @type {any}
      * @memberof TaskResult
      */
-    args: Blob;
+    args: any | null;
     /**
      * 
-     * @type {Blob}
+     * @type {any}
      * @memberof TaskResult
      */
-    kwargs: Blob;
+    kwargs: any | null;
     /**
      * 
-     * @type {string}
+     * @type {any}
      * @memberof TaskResult
      */
-    result: string;
+    result: any | null;
 }
 
 /**
@@ -113,7 +113,7 @@ export function TaskResultFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'task_id': json['task_id'],
         'name': json['name'],
         'status': StatusFromJSON(json['status']),
-        'date_done': (new Date(json['date_done'])),
+        'date_done': json['date_done'],
         'traceback': json['traceback'],
         'queue': json['queue'],
         'args': json['args'],
@@ -134,7 +134,7 @@ export function TaskResultToJSON(value?: TaskResult | null): any {
         'task_id': value.task_id,
         'name': value.name,
         'status': StatusToJSON(value.status),
-        'date_done': (value.date_done.toISOString()),
+        'date_done': value.date_done,
         'traceback': value.traceback,
         'queue': value.queue,
         'args': value.args,

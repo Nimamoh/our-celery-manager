@@ -13,13 +13,6 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { TaskResult } from './TaskResult';
-import {
-    TaskResultFromJSON,
-    TaskResultFromJSONTyped,
-    TaskResultToJSON,
-} from './TaskResult';
-
 /**
  * 
  * @export
@@ -28,28 +21,28 @@ import {
 export interface TaskResultPage {
     /**
      * 
-     * @type {number}
+     * @type {any}
      * @memberof TaskResultPage
      */
-    total: number;
+    total: any | null;
     /**
      * 
-     * @type {number}
+     * @type {any}
      * @memberof TaskResultPage
      */
-    page_number: number;
+    page_number: any | null;
     /**
      * 
-     * @type {number}
+     * @type {any}
      * @memberof TaskResultPage
      */
-    page_size: number;
+    page_size: any | null;
     /**
      * 
-     * @type {Array<TaskResult>}
+     * @type {any}
      * @memberof TaskResultPage
      */
-    data: Array<TaskResult>;
+    data: any | null;
 }
 
 /**
@@ -78,7 +71,7 @@ export function TaskResultPageFromJSONTyped(json: any, ignoreDiscriminator: bool
         'total': json['total'],
         'page_number': json['page_number'],
         'page_size': json['page_size'],
-        'data': ((json['data'] as Array<any>).map(TaskResultFromJSON)),
+        'data': json['data'],
     };
 }
 
@@ -94,7 +87,7 @@ export function TaskResultPageToJSON(value?: TaskResultPage | null): any {
         'total': value.total,
         'page_number': value.page_number,
         'page_size': value.page_size,
-        'data': ((value.data as Array<any>).map(TaskResultToJSON)),
+        'data': value.data,
     };
 }
 

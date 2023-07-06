@@ -58,10 +58,4 @@ async def clone_and_send(request: Request, id: str):
     return r
 
 
-def _with_trailing_slash(s: str):
-    if s.endswith("/"):
-        return s
-    return f"{s}/"
-
-
 app.mount("/", StaticFiles(directory="app/static", html=True), name="static")

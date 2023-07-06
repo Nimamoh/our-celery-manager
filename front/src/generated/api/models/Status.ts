@@ -12,34 +12,33 @@
  * Do not edit the class manually.
  */
 
-
+import { exists, mapValues } from '../runtime';
 /**
  * An enumeration.
  * @export
+ * @interface Status
  */
-export const Status = {
-    Pending: 'PENDING',
-    Received: 'RECEIVED',
-    Started: 'STARTED',
-    Success: 'SUCCESS',
-    Failure: 'FAILURE',
-    Revoked: 'REVOKED',
-    Rejected: 'REJECTED',
-    Retry: 'RETRY',
-    Ignored: 'IGNORED'
-} as const;
-export type Status = typeof Status[keyof typeof Status];
+export interface Status {
+}
 
+/**
+ * Check if a given object implements the Status interface.
+ */
+export function instanceOfStatus(value: object): boolean {
+    let isInstance = true;
+
+    return isInstance;
+}
 
 export function StatusFromJSON(json: any): Status {
     return StatusFromJSONTyped(json, false);
 }
 
 export function StatusFromJSONTyped(json: any, ignoreDiscriminator: boolean): Status {
-    return json as Status;
+    return json;
 }
 
 export function StatusToJSON(value?: Status | null): any {
-    return value as any;
+    return value;
 }
 
