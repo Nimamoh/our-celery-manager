@@ -1,0 +1,17 @@
+#
+# Base exemple for deploying our-celery-manager
+#
+version: '3'
+services:
+
+  api:
+    image: nimamoh/our-celery-manager:latest
+    ports:
+      - 8888:80
+    environment:
+      BACKEND: db+postgresql://user:password@db:5432/database
+      BROKER: redis://redis:6379/0
+    labels:
+      traefik.enable: true
+      traefik.http.routers.our-celery-manager-2.rule: Host(`our-celery-manager.localhost`)
+      traefik.http.services.our-celery-manager-2.loadbalancer.server.port: 80

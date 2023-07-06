@@ -57,6 +57,14 @@ npm run dev
 npm run build
 ```
 
+### Setup a simple development environment
+
+Go to the [examples](./examples/composes/) folder and run:
+
+```bash
+docker-compose up -d
+```
+
 ## TODO:
 
 - [x] Improve table

@@ -10,6 +10,10 @@ Specifically, it is a query interface for tasks stored in the [result backend](h
 
 [DEV_README.md](./DEV_README.md)
 
+## Examples of docker-compose files
+
+See folder [examples](./examples/composes/)
+
 ## Screenshot
 
 ![Interface](screenshot.png)

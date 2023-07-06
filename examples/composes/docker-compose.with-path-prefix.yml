@@ -1,0 +1,19 @@
+#
+# Base exemple for deploying our-celery-manager with a base path prefix
+#
+version: '3'
+services:
+
+  api:
+    image: nimamoh/our-celery-manager:latest
+    ports:
+      - 8888:80
+    environment:
+      BACKEND: db+postgresql://user:password@db:5432/database
+      BROKER: redis://redis:6379/0
+    labels:
+      traefik.enable: true
+      traefik.http.routers.our-celery-manager.rule: Host(`celery-manager.localhost`)&&PathPrefix(`/our-celery-manager`)
+      traefik.http.services.our-celery-manager.loadbalancer.server.port: 80
+      traefik.http.middlewares.our-celery-manager-basic-strip-prefix.stripPrefix.prefixes: /our-celery-manager
+      traefik.http.routers.our-celery-manager.middlewares: 'our-celery-manager-basic-strip-prefix'
