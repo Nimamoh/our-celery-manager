@@ -75,4 +75,4 @@ docker-compose up -d
 - [ ] Select and add in bulk.
 - [x] Know the maximum number of pages.
 - [ ] Task hierarchy
-  - [ ] Currently not possible as the parent id is not persisted: issue
+  - [ ] Currently not possible as the parent id is not persisted: [issue](https://github.com/celery/celery/issues/5824)

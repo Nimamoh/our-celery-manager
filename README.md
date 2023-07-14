@@ -6,6 +6,11 @@ Specifically, it is a query interface for tasks stored in the [result backend](h
 
 *This tool is only compatible with a result backend that uses a SQL database.*
 
+## Features
+
+- Web interface to visualize tasks results and states (success, failure, etc.) from the celery result backend
+- Button to relaunch a task with same name, arguments. (Better use this feature with idempotent tasks)
+
 ## Development Documentation
 
 [DEV_README.md](./DEV_README.md)
