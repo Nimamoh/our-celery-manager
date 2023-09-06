@@ -15,6 +15,16 @@ services:
       traefik.enable: true
       traefik.http.routers.our-celery-manager-2.rule: Host(`our-celery-manager.localhost`)
       traefik.http.services.our-celery-manager-2.loadbalancer.server.port: 80
+  
+  worker:
+    build:
+      context: ./api
+      args:
+        - VERSION=local-docker-compose
+    environment:
+      BACKEND: db+postgresql://user:password@db:5432/database
+      BROKER: redis://redis:6379/0
+    command: "celery -A app.ocm_worker worker --loglevel=info"
 
   redis:
     image: redis

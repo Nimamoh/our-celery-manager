@@ -3,7 +3,7 @@ from celery import Celery
 from .Settings import Settings
 
 settings = Settings() # type: ignore
-app = Celery(
+app: Celery = Celery(
     "tasks",
     broker=settings.broker,
     backend=settings.backend,
