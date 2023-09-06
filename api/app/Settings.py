@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 from . import _content_of_version_or
 
 from urllib.parse import urlparse
