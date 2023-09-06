@@ -1,10 +1,8 @@
 from typing import Annotated
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import RedirectResponse
 
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 from app.models.task.TaskResult import TaskResultPage
 
