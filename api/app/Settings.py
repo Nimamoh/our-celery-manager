@@ -4,13 +4,6 @@ from . import _content_of_version_or
 
 from urllib.parse import urlparse
 
-@dataclass
-class SettingsApiResponse:
-    application_name: str
-    version: str
-    broker: str | None
-    backend: str | None
-
 class Settings(BaseSettings):
 
     root_path: str = "/"
@@ -46,3 +39,20 @@ def _hide_url_password(s):
         return s.replace(url.password, '****')
     else:
         return s
+
+
+@dataclass
+class SettingsApiResponse:
+    application_name: str
+    version: str
+    broker: str | None
+    backend: str | None
+
+    @staticmethod
+    def from_settings(settings: Settings):
+        return SettingsApiResponse(
+            application_name=settings.application_name,
+            version=settings.version,
+            broker=settings.broker,
+            backend=settings.backend,
+        )

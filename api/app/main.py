@@ -32,7 +32,8 @@ pre_startup_check()
 
 @app.get("/info", response_model=SettingsApiResponse)
 async def info():
-    return settings.hiding_passwords()
+    displayable_settings = settings.hiding_passwords()
+    return SettingsApiResponse.from_settings(displayable_settings)
 
 
 @app.get("/results/page", response_model=TaskResultPage)
