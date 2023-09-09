@@ -8,16 +8,15 @@ from fastapi.staticfiles import StaticFiles
 from our_celery_manager.app.models.task.TaskResult import TaskResultPage
 
 from .service.celery.model import SearchField, SortField
-from .Settings import Settings, SettingsApiResponse
+from .settings import SettingsApiResponse, settings
 
 from .service.celery.results import result_page, clone_and_send_task
-from .startup_checks import pre_startup_check
+from .startup_checks import pre_startup_check, pre_startup_db_migration
 
 import logging
 
 logging.basicConfig(level=logging.INFO)
 
-settings = Settings()  # type: ignore
 app = FastAPI(root_path=settings.root_path)
 
 app.add_middleware(
@@ -29,6 +28,7 @@ app.add_middleware(
 )
 
 pre_startup_check()
+pre_startup_db_migration()
 
 
 @app.get("/info", response_model=SettingsApiResponse)

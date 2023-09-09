@@ -6,3 +6,6 @@ __pycache__
 front/node_modules/
 front-vue/node_modules
 our-celery-manager.code-workspace
+build/
+.mypy_cache/
+*.egg-info

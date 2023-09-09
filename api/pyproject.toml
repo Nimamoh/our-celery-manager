@@ -3,10 +3,14 @@ name = "our-celery-manager"
 description = "Application to manage celery through backend"
 dynamic = ["version"]
 dependencies = [
+
     "pytz",
     "fastapi[all] ~= 0.9",
     "celery[redis,sqlalchemy] ~= 5.2",
     "sqlalchemy[pymysql] ~= 2.0",
+    "alembic ~= 1.12",
+
+    "typer ~= 0.9",
 
     # Db drivers
     "psycopg2 ~= 2.9",
@@ -15,3 +19,6 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [ "types-pytz", "mypy", "black" ]
+
+[project.scripts]
+ocm-cli = "our_celery_manager.app.cli:cli"

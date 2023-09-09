@@ -9,9 +9,8 @@ from datetime import datetime, timedelta
 from celery.backends.database.models import TaskExtended
 from celery import Celery
 
-from .Settings import Settings
+from .settings import settings
 
-settings = Settings()  # type: ignore
 celery = Celery(
     "tasks", broker=settings.broker, backend=settings.backend, result_extended=True
 )

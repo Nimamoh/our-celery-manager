@@ -3,9 +3,8 @@
 from celery import Celery
 import time
 
-from .Settings import Settings
+from .settings import settings
 
-settings = Settings()  # type: ignore
 celery = Celery(
     "test_app", broker=settings.broker, backend=settings.backend, result_extended=True
 )

@@ -15,6 +15,12 @@ Consists of two applications:
 | BROKER           | Celery broker address                                                                                                                  | `redis://redis:6379/0`                                  |
 | BACKEND          | Result backend address                                                                                                                 | `db+postgresql://user:password@127.0.0.1:5432/database` |
 | ROOT_PATH        | The `path prefix` for a potential proxy, see [FastAPI - behind a proxy](https://https://fastapi.tiangolo.com/advanced/behind-a-proxy/) | `/prefix/`                                              |
+| Name             | Description                                                                                                                            |                                                         |
+|------------------|----------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
+| APPLICATION_NAME | Name of the application                                                                                                                | `Our celery manager`                                    |
+| BROKER           | Celery broker address                                                                                                                  | `redis://redis:6379/0`                                  |
+| BACKEND          | Result backend address                                                                                                                 | `db+postgresql://user:password@127.0.0.1:5432/database` |
+| ROOT_PATH        | The `path prefix` for a potential proxy, see [FastAPI - behind a proxy](https://https://fastapi.tiangolo.com/advanced/behind-a-proxy/) | `/prefix/`                                              |
 
 ## API Application
 
@@ -37,7 +43,27 @@ pip-compile \
 pip install -r requirements.txt -r dev-requirements.txt -e .
 ```
 
-###
+### Database model and migration
+
+The application uses its own tables. It uses alembic for db migration and infers the db location from the `BACKEND` address.
+It uses a specific schema named `ocm` and should not interfere with other schema during migration.
+
+*The application performs a db migration at startup*
+
+#### Create a migration with alembic
+
+```bash
+alembic revision --autogenerate -m "migration name" # online revision creation
+```
+
+### CLI
+
+[typer](https://typer.tiangolo.com/) is used to provide a CLI interface. See [CLI package](./api/src/our_celery_manager/app/cli) for sources.
+Also [pyproject.toml](./api/pyproject.toml) defines a script bound to `ocm-cli` letting use commands like:
+
+```bash
+ocm-cli --help
+```
 
 ### Generate TypeScript client
 

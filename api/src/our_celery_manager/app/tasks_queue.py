@@ -1,8 +1,7 @@
 from celery import Celery
 
-from .Settings import Settings
+from .settings import settings
 
-settings = Settings() # type: ignore
 app: Celery = Celery(
     "tasks",
     broker=settings.broker,
