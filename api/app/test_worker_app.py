@@ -31,9 +31,10 @@ def ohlong(seconds: int = 5):
 def add_n_times(n=5, a=1, b=2):
     curr_taskid = current_task.request.id
     for _ in range(n):
-        child_add.delay(a, b, ocm_parent_id=curr_taskid)
+        # child_add.delay(a, b, ocm_parent_id=curr_taskid)
+        child_add.delay(a, b, f'ocm_parent_id:{curr_taskid}')
 
 @celery.task
-def child_add(x, y, ocm_parent_id = None):
+def child_add(x, y):
     return x + y
 # endregion

@@ -17,13 +17,21 @@ def result_page(
     sorts: list[SortField],
     searchs: list[SearchField],
 ) -> TaskResultPage:
-    assert pageSize < 100, "La taille de la page doit être <100"
-    assert pageNumber >= 0, "Le numéro de page doit être positif"
+    assert pageSize < 100, "page size must be <100"
+    assert pageNumber >= 0, "Page number must be >= 0"
 
     stmt = _stmt(sorts, searchs)
-    paginated_stmt = stmt.limit(pageSize).offset((pageNumber)*pageSize)
+    paginated_stmt = stmt
 
     session = celeryapp.backend.ResultSession()
+
+    # XXX: systeme de tag pour pouvoir compter de manière efficace ?
+    # i = 0
+    # while True:
+    #     if i < offset:
+    #         continue
+
+    #     i+=1
 
 
     total = session.query(func.count()).select_from(stmt).scalar()

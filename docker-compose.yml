@@ -2,10 +2,11 @@ version: '3'
 services:
 
   api:
-    build: 
-      context: ./api
-      args:
-        - VERSION=local-docker-compose
+    image: nimamoh/our-celery-manager:v1.0.5
+    # build: 
+    #   context: ./api
+    #   args:
+    #     - VERSION=local-docker-compose
     ports:
       - 8888:80
     environment:
@@ -22,7 +23,7 @@ services:
       - 6379:6379
 
   flower:
-    image: mher/flower
+    image: mher/flower:2.0
     ports:
       - 5555:5555
     environment:
