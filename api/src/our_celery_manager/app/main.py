@@ -1,10 +1,11 @@
+from pathlib import Path
 from typing import Annotated
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.staticfiles import StaticFiles
 
-from app.models.task.TaskResult import TaskResultPage
+from our_celery_manager.app.models.task.TaskResult import TaskResultPage
 
 from .service.celery.model import SearchField, SortField
 from .Settings import Settings, SettingsApiResponse
@@ -57,4 +58,5 @@ async def clone_and_send(request: Request, id: str):
     return r
 
 
-app.mount("/", StaticFiles(directory="app/static", html=True), name="static")
+static_path = Path(__file__).parent / 'static'
+app.mount("/", StaticFiles(directory=static_path, html=True), name="static")

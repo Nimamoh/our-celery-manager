@@ -1,9 +1,0 @@
-pytz
-fastapi[all] ~= 0.9
-celery[redis,sqlalchemy] ~= 5.2
-sqlalchemy[pymysql] ~= 2.0
-
-# db drivers
-psycopg2-binary~=2.9
-psycopg
-psycopg-binary

@@ -1,0 +1,2 @@
+global-include static/**
+global-include VERSION

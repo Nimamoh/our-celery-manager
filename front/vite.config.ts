@@ -16,6 +16,6 @@ export default defineConfig({
   },
   build: {
     target: 'esnext', // XXX: Because we use very new features
-    outDir: '../api/app/static', // XXX: parce que le front est servi par l'api pour le moment
+    outDir: '../api/src/our_celery_manager/app/static', // XXX: Because frontend is served by API
   }
 })

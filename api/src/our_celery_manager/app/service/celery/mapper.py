@@ -1,6 +1,6 @@
 import pytz
-from app.models.task.TaskResult import TaskResult, Status
-from app.service.celery.model import DbResultRow
+from our_celery_manager.app.models.task.TaskResult import TaskResult, Status
+from our_celery_manager.app.service.celery.model import DbResultRow
 
 _utc = pytz.timezone('UTC')
 

@@ -1,14 +1,14 @@
 from . import logger
 
-from app.service.celery.model import DbResultRow, SearchField, SortDirection, SortField, db_result_select_fields
-from app.service.celery.mapper import map_result
+from our_celery_manager.app.service.celery.model import DbResultRow, SearchField, SortDirection, SortField, db_result_select_fields
+from our_celery_manager.app.service.celery.mapper import map_result
 from sqlalchemy import asc, desc, select, func
 from celery.backends.database.models import TaskExtended
-from app.models.task.TaskResult import TaskResult, TaskResultPage
+from our_celery_manager.app.models.task.TaskResult import TaskResult, TaskResultPage
 
 from celery.result import AsyncResult
 
-from app.tasks_queue import app as celeryapp
+from our_celery_manager.app.tasks_queue import app as celeryapp
 
 
 def result_page(

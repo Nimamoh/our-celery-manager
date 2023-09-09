@@ -9,29 +9,42 @@ Consists of two applications:
 
 ## Environment Variables
 
-| Name              | Description                                                                                                                           |                                                         |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| APPLICATION_NAME  | Name of the application                                                                                                               | `Our celery manager`                                    |
-| BROKER            | Celery broker address                                                                                                                 | `redis://redis:6379/0`                                  |
-| BACKEND           | Result backend address                                                                                                                | `db+postgresql://user:password@127.0.0.1:5432/database` |
-| ROOT_PATH         | The `path prefix` for a potential proxy, see [FastAPI - behind a proxy](https://https://fastapi.tiangolo.com/advanced/behind-a-proxy/) | `/prefix/`                                              |
+| Name             | Description                                                                                                                            |                                                         |
+|------------------|----------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
+| APPLICATION_NAME | Name of the application                                                                                                                | `Our celery manager`                                    |
+| BROKER           | Celery broker address                                                                                                                  | `redis://redis:6379/0`                                  |
+| BACKEND          | Result backend address                                                                                                                 | `db+postgresql://user:password@127.0.0.1:5432/database` |
+| ROOT_PATH        | The `path prefix` for a potential proxy, see [FastAPI - behind a proxy](https://https://fastapi.tiangolo.com/advanced/behind-a-proxy/) | `/prefix/`                                              |
 
 ## API Application
 
-### Generate `requirements.txt`
+### Pin `requirements.txt` and `dev-requirements.txt` for reproductible builds
 
 ```bash
 pip install pip-tools
-pip-compile --resolver=backtracking requirements.in \
-        && pip-compile --resolver=backtracking dev-requirements.in
-pip-sync requirements.txt dev-requirements.txt
+pip-compile \
+      -o requirements.txt \
+      pyproject.toml
+pip-compile \
+      --extra dev \
+      -o dev-requirements.txt \
+      pyproject.toml
 ```
+
+### Installation for local development
+
+```bash
+pip install -r requirements.txt -r dev-requirements.txt -e .
+```
+
+###
 
 ### Generate TypeScript client
 
 Start the API locally and run the following command:
 
 ```fish
+# ⚠ this is fish shell
 docker run --rm --network="host" --add-host host.docker.internal:host-gateway -v (pwd)":/local" openapitools/openapi-generator-cli generate \
         -i http://host.docker.internal:8000/openapi.json \
         -g typescript-fetch \
@@ -53,7 +66,7 @@ npm ci
 ```bash
 # For development
 npm run dev
-# Pour installer l'application frontend dans les statiques servis par python
+# To install the frontend in static files of API
 npm run build
 ```
 

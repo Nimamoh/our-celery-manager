@@ -1,19 +1,23 @@
-FROM python:3.11.3-alpine
+FROM python:3.11.5-alpine
 
 EXPOSE 80
 
 WORKDIR /code
 
-COPY requirements.txt /code/requirements.txt
+COPY . /code
 
-RUN apk add --no-cache build-base \
-  && pip install -r requirements.txt \
-  && apk del --no-cache build-base
-
-COPY ./app /code/app
+RUN \
+ apk add --no-cache postgresql-libs && \
+ apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev && \
+ pip install -r requirements.txt  && \
+ apk --purge del .build-deps
 
 ARG VERSION=development
-RUN echo "$VERSION" > /code/app/VERSION
+RUN echo "$VERSION" > /code/src/our_celery_manager/app/VERSION
+
+RUN pip install .
+
+RUN rm -rf /code
 
 # EXPOSE
-CMD [ "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80" ]
+CMD [ "uvicorn", "our_celery_manager.app.main:app", "--host", "0.0.0.0", "--port", "80" ]

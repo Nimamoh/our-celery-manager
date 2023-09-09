@@ -1,4 +1,4 @@
-from app.tasks_queue import app as celeryapp
+from our_celery_manager.app.tasks_queue import app as celeryapp
 
 import celery
 
