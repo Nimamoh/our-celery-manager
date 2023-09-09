@@ -15,16 +15,18 @@ import InputText from 'primevue/inputtext';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
 
+import TracebackVue from '@/components/result-table/traceback/Traceback.vue'
+
 const toast = useToast();
 const confirm = useConfirm();
 
 let metaRows = ref([
     { field: 'task_id', header: 'Task ID', hidden: false },
-    { field: 'name', header: 'Name', hidden: false },
+    { field: 'name', header: 'Name', hidden: false, disableHideable: true },
     { field: 'args', header: 'args', hidden: true },
-    { field: 'kwargs', header: 'kwargs', hidden: false },
-    { field: 'date_done', header: 'Ended in', hidden: false },
-    { field: 'traceback', header: 'Traceback', hidden: true },
+    { field: 'kwargs', header: 'kwargs', hidden: true },
+    { field: 'date_done', header: 'Ended in', hidden: true },
+    { field: 'traceback', header: 'Traceback', hidden: false, disableHideable: true },
     { field: 'result', header: 'Result', hidden: true },
     { field: 'status', header: 'Status', hidden: false },
 ]);
@@ -165,9 +167,9 @@ const onHide = (column) => { column.hidden = true; }
 
 <template>
     <div class="card flex flex-wrap justify-content-center w-100">
-        <DataTable showGridlines  stripedRows :value="rows" lazy paginator :rows="page_get_request.size" v-model:filters="filters"
-            :totalRecords="totalRecords" :loading="loading_results" @page="onPage($event)" @sort="onSort($event)"
-            @filter="onFilter($event)" filterDisplay="row"
+        <DataTable showGridlines stripedRows :value="rows" lazy paginator :rows="page_get_request.size"
+            v-model:filters="filters" :totalRecords="totalRecords" :loading="loading_results" @page="onPage($event)"
+            @sort="onSort($event)" @filter="onFilter($event)" filterDisplay="row"
             :globalFilterFields="['task_id', 'name', 'args', 'kwargs', 'date_done', 'traceback', 'result', 'status']"
             :multi-sort-meta="multiSortMeta" sortMode="multiple" removableSort>
             <template #header>
@@ -181,11 +183,11 @@ const onHide = (column) => { column.hidden = true; }
                 filterMatchMode="contains" sortable>
 
                 <template #header>
-                    <span class="p-column-title">
-                        <Button v-if="col.hidden" 
-                        @click="onDisplay(col)" icon="pi pi-eye" rounded text size="large"></Button>
-                        <Button v-else 
-                        @click="onHide(col)" icon="pi pi-eye-slash" rounded text size="large"></Button> </span>
+                    <span class="p-column-title" v-if="!col.disableHideable">
+                        <Button v-if="col.hidden" @click="onDisplay(col)" icon="pi pi-eye" rounded text
+                            size="large"></Button>
+                        <Button v-else @click="onHide(col)" icon="pi pi-eye-slash" rounded text size="large"></Button>
+                    </span>
                 </template>
 
                 <template #filter="{ filterModel, filterCallback }">
@@ -224,11 +226,10 @@ const onHide = (column) => { column.hidden = true; }
                     </template>
 
                     <!-- TRACEBACK -->
-                    <!-- <template v-else-if="col.field == 'traceback' || col.field == 'result'">
-                        <pre>
-                            {{ data[col.field] }}
-                        </pre>
-                    </template> -->
+
+                    <template v-else-if="col.field == 'traceback' || col.field == 'result'">
+                        <TracebackVue :traceback="data[col.field]" />
+                    </template>
 
                     <!-- OTHERS -->
                     <template v-else>
@@ -248,5 +249,4 @@ const onHide = (column) => { column.hidden = true; }
             </Column>
         </DataTable>
     </div>
-
 </template>
