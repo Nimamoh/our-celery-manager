@@ -24,7 +24,7 @@ services:
     environment:
       BACKEND: db+postgresql://user:password@db:5432/database
       BROKER: redis://redis:6379/0
-    command: "celery -A app.ocm_worker worker --loglevel=info"
+    command: "celery -A our_celery_manager.app.ocm_worker worker --loglevel=debug"
 
   redis:
     image: redis
