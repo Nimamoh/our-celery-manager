@@ -3,7 +3,6 @@
 # by the following command:
 #
 #    pip-compile --output-file=requirements.txt pyproject.toml
-#    pip-compile --output-file=requirements.txt pyproject.toml
 #
 alembic==1.12.0
     # via our-celery-manager (pyproject.toml)
@@ -78,9 +77,9 @@ orjson==3.9.7
     # via fastapi
 prompt-toolkit==3.0.39
     # via click-repl
-psycopg==3.1.10
+psycopg-binary==3.1.10
     # via our-celery-manager (pyproject.toml)
-psycopg2==2.9.7
+psycopg2-binary==2.9.7
     # via our-celery-manager (pyproject.toml)
 pydantic==2.3.0
     # via
@@ -123,7 +122,6 @@ sqlalchemy[pymysql]==2.0.20
     #   alembic
     #   celery
     #   our-celery-manager (pyproject.toml)
-    #   our-celery-manager (pyproject.toml)
 starlette==0.27.0
     # via fastapi
 typer==0.9.0
@@ -132,7 +130,6 @@ typing-extensions==4.7.1
     # via
     #   alembic
     #   fastapi
-    #   psycopg
     #   pydantic
     #   pydantic-core
     #   sqlalchemy

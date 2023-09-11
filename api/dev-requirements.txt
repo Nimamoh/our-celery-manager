@@ -4,6 +4,8 @@
 #
 #    pip-compile --extra=dev --output-file=dev-requirements.txt pyproject.toml
 #
+alembic==1.12.0
+    # via our-celery-manager (pyproject.toml)
 amqp==5.1.1
     # via kombu
 annotated-types==0.5.0
@@ -14,8 +16,6 @@ anyio==3.7.1
     #   httpcore
     #   starlette
     #   watchfiles
-attrs==23.1.0
-    # via fixtup
 billiard==4.1.0
     # via celery
 black==23.9.0
@@ -26,9 +26,6 @@ certifi==2023.7.22
     # via
     #   httpcore
     #   httpx
-    #   requests
-charset-normalizer==3.2.0
-    # via requests
 click==8.1.7
     # via
     #   black
@@ -36,7 +33,7 @@ click==8.1.7
     #   click-didyoumean
     #   click-plugins
     #   click-repl
-    #   fixtup
+    #   typer
     #   uvicorn
 click-didyoumean==0.3.0
     # via celery
@@ -49,8 +46,6 @@ dnspython==2.4.2
 email-validator==2.0.0.post2
     # via fastapi
 fastapi[all]==0.103.1
-    # via our-celery-manager (pyproject.toml)
-fixtup==0.1.5
     # via our-celery-manager (pyproject.toml)
 greenlet==2.0.2
     # via sqlalchemy
@@ -69,17 +64,18 @@ idna==3.4
     #   anyio
     #   email-validator
     #   httpx
-    #   requests
 itsdangerous==2.1.2
     # via fastapi
 jinja2==3.1.2
-    # via
-    #   fastapi
-    #   fixtup
+    # via fastapi
 kombu==5.3.2
     # via celery
+mako==1.2.4
+    # via alembic
 markupsafe==2.1.3
-    # via jinja2
+    # via
+    #   jinja2
+    #   mako
 mypy==1.5.1
     # via our-celery-manager (pyproject.toml)
 mypy-extensions==1.0.0
@@ -94,15 +90,11 @@ pathspec==0.11.2
     # via black
 platformdirs==3.10.0
     # via black
-plumbum==1.8.2
-    # via fixtup
 prompt-toolkit==3.0.39
-    # via
-    #   click-repl
-    #   fixtup
-psycopg==3.1.10
+    # via click-repl
+psycopg-binary==3.1.10
     # via our-celery-manager (pyproject.toml)
-psycopg2==2.9.7
+psycopg2-binary==2.9.7
     # via our-celery-manager (pyproject.toml)
 pydantic==2.3.0
     # via
@@ -121,7 +113,6 @@ python-dateutil==2.8.2
     # via celery
 python-dotenv==1.0.0
     # via
-    #   fixtup
     #   pydantic-settings
     #   uvicorn
 python-multipart==0.0.6
@@ -131,12 +122,9 @@ pytz==2023.3.post1
 pyyaml==6.0.1
     # via
     #   fastapi
-    #   fixtup
     #   uvicorn
 redis==4.6.0
     # via celery
-requests==2.31.0
-    # via fixtup
 six==1.16.0
     # via python-dateutil
 sniffio==1.3.0
@@ -146,28 +134,28 @@ sniffio==1.3.0
     #   httpx
 sqlalchemy[pymysql]==2.0.20
     # via
+    #   alembic
     #   celery
     #   our-celery-manager (pyproject.toml)
 starlette==0.27.0
     # via fastapi
-toml==0.10.2
-    # via fixtup
+typer==0.9.0
+    # via our-celery-manager (pyproject.toml)
 types-pytz==2023.3.0.1
     # via our-celery-manager (pyproject.toml)
 typing-extensions==4.7.1
     # via
+    #   alembic
     #   fastapi
     #   mypy
-    #   psycopg
     #   pydantic
     #   pydantic-core
     #   sqlalchemy
+    #   typer
 tzdata==2023.3
     # via celery
 ujson==5.8.0
     # via fastapi
-urllib3==2.0.4
-    # via requests
 uvicorn[standard]==0.23.2
     # via fastapi
 uvloop==0.17.0
