@@ -34,9 +34,10 @@ target_metadata = ocm_metadata()
 schema_name = "ocm"
 from our_celery_manager.app.settings import settings
 if settings.backend:
-    connstr = settings.db_connstring()
-    print(f"Migrating db {connstr} on schema {schema_name}")
-    config.set_main_option('sqlalchemy.url', settings.db_connstring())
+    display_connstring = settings.hiding_passwords().db_connstring()
+    connstring = settings.db_connstring()
+    print(f"Migrating db {display_connstring} on schema {schema_name}")
+    config.set_main_option('sqlalchemy.url', connstring)
 
 def include_only_ocm_schema(name, type_, parent_names):
     if type_ == 'schema':
