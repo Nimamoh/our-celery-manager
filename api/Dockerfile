@@ -17,7 +17,5 @@ RUN echo "$VERSION" > /code/src/our_celery_manager/app/VERSION
 
 RUN pip install .
 
-RUN rm -rf /code
-
 # EXPOSE
 CMD [ "uvicorn", "our_celery_manager.app.main:app", "--host", "0.0.0.0", "--port", "80" ]
