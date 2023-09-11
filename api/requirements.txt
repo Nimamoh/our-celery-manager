@@ -3,7 +3,6 @@
 # by the following command:
 #
 #    pip-compile --output-file=requirements.txt pyproject.toml
-#    pip-compile --output-file=requirements.txt pyproject.toml
 #
 alembic==1.12.0
     # via our-celery-manager (pyproject.toml)
@@ -80,7 +79,9 @@ prompt-toolkit==3.0.39
     # via click-repl
 psycopg==3.1.10
     # via our-celery-manager (pyproject.toml)
-psycopg2==2.9.7
+psycopg-binary==3.1.10
+    # via our-celery-manager (pyproject.toml)
+psycopg2-binary==2.9.7
     # via our-celery-manager (pyproject.toml)
 pydantic==2.3.0
     # via
@@ -122,7 +123,6 @@ sqlalchemy[pymysql]==2.0.20
     # via
     #   alembic
     #   celery
-    #   our-celery-manager (pyproject.toml)
     #   our-celery-manager (pyproject.toml)
 starlette==0.27.0
     # via fastapi
