@@ -23,9 +23,10 @@ class Settings(BaseSettings):
 
     
     def hiding_passwords(self):
-        self.application_name = _hide_url_password(self.application_name)
-        self.backend = _hide_url_password(self.backend)
-        return self
+        _settings = Settings()
+        _settings.application_name = _hide_url_password(_settings.application_name)
+        _settings.backend = _hide_url_password(_settings.backend)
+        return _settings
     
     def db_connstring(self):
         """Deduce db connection string from backend string (remove prefixed db+)"""
