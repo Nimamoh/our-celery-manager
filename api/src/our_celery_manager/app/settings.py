@@ -26,6 +26,7 @@ class Settings(BaseSettings):
         _settings = Settings()
         _settings.application_name = _hide_url_password(_settings.application_name)
         _settings.backend = _hide_url_password(_settings.backend)
+        _settings.broker = _hide_url_password(_settings.broker)
         return _settings
     
     def db_connstring(self):
