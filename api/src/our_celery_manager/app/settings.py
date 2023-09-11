@@ -30,11 +30,13 @@ class Settings(BaseSettings):
         return _settings
     
     def db_connstring(self):
-        """Deduce db connection string from backend string (remove prefixed db+)"""
+        """Deduce db connection string from backend string (remove prefixed db+ and options after ?)"""
         prefix = 'db+'
         if not self.backend.startswith(prefix):
             raise ValueError(f"result backend must be in form {prefix}")
-        return self.backend.removeprefix(prefix)
+        connstr = self.backend.removeprefix(prefix)
+        connstr = connstr.split('?')[0]
+        return connstr
 
 def _hide_url_password(s):
     if not isinstance(s, str):
