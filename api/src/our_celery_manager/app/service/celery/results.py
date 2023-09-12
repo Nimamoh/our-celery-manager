@@ -1,10 +1,17 @@
+from our_celery_manager.app.service.ocm_taskmeta import OcmTaskMetaService
 from . import logger
 
-from our_celery_manager.app.service.celery.model import DbResultRow, SearchField, SortDirection, SortField, db_result_select_fields
+from sqlalchemy.orm import Session
+
+from our_celery_manager.app.service.celery.model import DbResultRow, SearchField, SortDirection, SortField, db_result_select_fields, cloned, being_a_clone
 from our_celery_manager.app.service.celery.mapper import map_result
-from sqlalchemy import asc, desc, select, func
+from our_celery_manager.app.models.ocm.clone import CloneEvent
 from celery.backends.database.models import TaskExtended
+
 from our_celery_manager.app.models.task.TaskResult import TaskResult, TaskResultPage
+
+from sqlalchemy import asc, desc, select, func
+from sqlalchemy.orm import aliased
 
 from celery.result import AsyncResult
 
@@ -16,15 +23,13 @@ def result_page(
     pageNumber: int,
     sorts: list[SortField],
     searchs: list[SearchField],
+    session: Session
 ) -> TaskResultPage:
     assert pageSize < 100, "La taille de la page doit être <100"
     assert pageNumber >= 0, "Le numéro de page doit être positif"
 
     stmt = _stmt(sorts, searchs)
     paginated_stmt = stmt.limit(pageSize).offset((pageNumber)*pageSize)
-
-    session = celeryapp.backend.ResultSession()
-
 
     total = session.query(func.count()).select_from(stmt).scalar()
     result = session.execute(paginated_stmt)
@@ -62,10 +67,17 @@ def _stmt(sorts: list[SortField], searchs: list[SearchField]):
         term = search.term
         stmt = stmt.where(field.like(f"%{term}%"))
 
+    # We sort out the source of cloned tasks since only last ones interest us
+    # TODO: is it really what we want?!
+    stmt = stmt.outerjoin(cloned, cloned.task_id == TaskExtended.task_id)
+    stmt = stmt.outerjoin(being_a_clone, being_a_clone.clone_id == TaskExtended.task_id)
+    stmt = stmt.filter(being_a_clone.id == None)
+    stmt = stmt.group_by(TaskExtended.id)
+
     stmt = stmt.order_by(asc(TaskExtended.id))  # XXX: important
     return stmt
 
-def clone_and_send_task(id: str):
+def clone_and_send_task(id: str, session: Session):
     ar = AsyncResult(id)
 
     task_id = ar.task_id
@@ -78,10 +90,12 @@ def clone_and_send_task(id: str):
         name is not None or queue is None
     ), f"Aucun nom de tâche pour l'id {task_id}. Voir l'option 'result_extended' de celery."
 
-    t = celeryapp.send_task(
+    t: AsyncResult = celeryapp.send_task(
         name,
         args=args,
         kwargs=kwargs,
         queue=queue,
     )
+
+    OcmTaskMetaService.make(session).record_cloned(task_id, t.task_id)
     logger.info(f"Tâche {task_id} cloné et envoyé, nouvelle tâche: {t.task_id}")

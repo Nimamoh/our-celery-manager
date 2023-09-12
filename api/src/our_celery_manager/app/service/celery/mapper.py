@@ -22,4 +22,5 @@ def map_result(row: DbResultRow) -> TaskResult:
         args=row.args,
         kwargs=row.kwargs,
         result=tr_result,
+        nb_clones=row.nb_clones,
     )

@@ -21,14 +21,15 @@ const toast = useToast();
 const confirm = useConfirm();
 
 let metaRows = ref([
-    { field: 'task_id', header: 'Task ID', hidden: false },
-    { field: 'name', header: 'Name', hidden: false, disableHideable: true },
-    { field: 'args', header: 'args', hidden: true },
-    { field: 'kwargs', header: 'kwargs', hidden: true },
-    { field: 'date_done', header: 'Ended in', hidden: true },
-    { field: 'traceback', header: 'Traceback', hidden: false, disableHideable: true },
-    { field: 'result', header: 'Result', hidden: true },
-    { field: 'status', header: 'Status', hidden: false },
+    { field: 'task_id', header: 'Task ID', hidden: false, sortable: true },
+    { field: 'name', header: 'Name', hidden: false, sortable: true, disableHideable: true },
+    { field: 'args', header: 'args', sortable: true, hidden: true },
+    { field: 'kwargs', header: 'kwargs', sortable: true, hidden: true },
+    { field: 'date_done', header: 'Ended in', sortable: true, hidden: true },
+    { field: 'traceback', header: 'Traceback', sortable: true, hidden: false, disableHideable: true },
+    { field: 'result', header: 'Result', sortable: true, hidden: true },
+    { field: 'status', header: 'Status', sortable: true, hidden: false },
+    { field: 'nb_clones', header: 'Nombre clones', hidden: false, disableHideable: true },
 ]);
 const filters = ref({
     'task_id': '',
@@ -180,7 +181,7 @@ const onHide = (column) => { column.hidden = true; }
             </template>
 
             <Column v-for="col of metaRows" :field="col.field" :header="col.header" :showFilterMenu="false"
-                filterMatchMode="contains" sortable>
+                filterMatchMode="contains" :sortable="col.sortable">
 
                 <template #header>
                     <span class="p-column-title" v-if="!col.disableHideable">

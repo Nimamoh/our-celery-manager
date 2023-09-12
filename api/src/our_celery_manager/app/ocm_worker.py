@@ -10,6 +10,8 @@ from celery.backends.database.models import TaskExtended
 from celery import Celery
 
 from .settings import settings
+from .models.ocm.clone import CloneEvent
+from .db import SessionLocal
 
 celery = Celery(
     "tasks", broker=settings.broker, backend=settings.backend, result_extended=True
@@ -41,8 +43,24 @@ def ocm_cleanup_backend(being_older_than_days: int, only_success=True):
     )
     session = celery.backend.ResultSession()
     result = session.execute(stmt)
-    logger.info(f"Successfully deleted {result.rowcount} rows")
     session.commit()
+    logger.info(f"Successfully deleted {result.rowcount} tasks")
+
+    _ocm_cleanup_cloning_events(older_than)
 
 
-    
+def _ocm_cleanup_cloning_events(older_than: datetime):
+    """Cleans the cloning events"""
+
+    logger.info(f"Cleaning cloning events which are created before {older_than}")
+
+    stmt = (
+        delete(CloneEvent)
+        .where(CloneEvent.created < older_than)
+    )
+
+    session = SessionLocal()
+    result = session.execute(stmt)
+    session.commit()
+    logger.info(f"Successfully deleted {result.rowcount} events")
+

@@ -27,6 +27,8 @@ class TaskResult:
 
     result: str | None
 
+    nb_clones: int
+
 @dataclass
 class TaskResultPage:
     total: int
