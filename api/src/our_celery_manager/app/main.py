@@ -7,9 +7,10 @@ from fastapi import FastAPI, Query, Request, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.staticfiles import StaticFiles
+from our_celery_manager.app.models.dtos.tasks import ListResult, ListResultRow
 
 from our_celery_manager.app.models.task.TaskResult import TaskResultPage
-from our_celery_manager.app.service.celery.results import RowExp, result_page, clone_and_send_task, result_page_exp
+from our_celery_manager.app.service.celery.results import result_page, clone_and_send_task, result_page_exp
 
 from .service.celery.model import SearchField, SortField
 from .settings import SettingsApiResponse, settings
@@ -56,7 +57,7 @@ async def info():
     return SettingsApiResponse.from_settings(displayable_settings)
 
 
-@app.get("/results/page", response_model=TaskResultPage)
+@app.get("/old/results/page", response_model=TaskResultPage)
 async def task_result_page(
     request: Request,
     n: int = 0,
@@ -70,9 +71,18 @@ async def task_result_page(
     results = result_page(size, n, sorts, searchs, session)
     return results
 
-@app.get("/results/page/experiment", response_model=list[RowExp])
-async def task_result_page_exp(request: Request, session: Session = Depends(get_db)):
-    r = result_page_exp(session)
+@app.get("/results/page", response_model=ListResult)
+async def task_result_page_exp(
+    request: Request,
+    n: int = 0,
+    size: int = 10,
+    sort: Annotated[list[str], Query()] = [],
+    search: Annotated[list[str], Query()] = [],
+    session: Session = Depends(get_db)
+):
+    sorts = [SortField.from_api_str(s) for s in sort if s is not None and s != ""]
+    searchs = [SearchField.from_api_str(s) for s in search if s is not None and s != ""]
+    r = result_page_exp(size, n, sorts, searchs, session)
     return r
 
 @app.post("/clone_and_send/{id}")
@@ -87,5 +97,5 @@ app.mount("/", StaticFiles(directory=static_path, html=True), name="static")
 
 @app.exception_handler(Exception)
 def handle_exception(req, exception):
-    logger.exception(exception)
+    logger.exception(exception, exc_info=exception, stack_info=True)
     return Response("ISE", status_code=500)

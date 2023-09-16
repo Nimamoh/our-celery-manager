@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from typing import Dict, Tuple
+from our_celery_manager.app.models.dtos.tasks import ListResultRow
 from our_celery_manager.app.service.ocm_taskmeta import OcmTaskMetaService
 from . import logger
 
@@ -11,67 +12,156 @@ from celery.backends.database.models import TaskExtended
 
 from our_celery_manager.app.models.task.TaskResult import TaskResult, TaskResultPage
 
-from sqlalchemy import asc, desc, join, select, func, text, union_all, String
-from sqlalchemy.orm import aliased, with_expression
+from our_celery_manager.app.models.dtos.tasks import TaskResult as TaskResultDto, ListResultRow, ListResult
+
+from sqlalchemy import CTE, Select, Subquery, asc, desc, join, select, func, String
+from sqlalchemy.orm import aliased
 
 from celery.result import AsyncResult
 
 from our_celery_manager.app.tasks_queue import app as celeryapp
 
-@dataclass
-class RowExp:
-    task_id: str
-    nb_clones: int
+TaskIdTable = Tuple[str, str, str]
 
-def result_page_exp(session: Session) -> list[RowExp]:
-    te1 = aliased(TaskExtended)
-    te2 = aliased(TaskExtended)
-    ce = aliased(CloneEvent)
+def _tasks(
+    sorts: list[SortField],
+    searchs: list[SearchField],
+) -> Select[TaskIdTable]:
 
-    # root tasks (those not cloned)
-    q_root_tasks = select(
-        te1.task_id.label("clone").cast(String),
-        te1.task_id.label("src").cast(String),
-        te1.task_id.label("racine").cast(String),
-        # text("'racine'"),
+
+    select_fields = TaskResultDto.fields_to_select(TaskExtended)
+    stmt = select(
+        TaskExtended.task_id.label("clone").cast(String),
+        TaskExtended.task_id.label("src").cast(String),
+        TaskExtended.task_id.label("root").cast(String),
+        *select_fields
     ) \
-        .select_from(join(te1, ce, ce.clone_id == te1.task_id, isouter=True)) \
-        .where(ce.id.is_(None)) \
-        .order_by(te1.date_done, te1.id) \
-        .limit(100) \
-        .offset(0)
+        .select_from(join(TaskExtended, CloneEvent, CloneEvent.clone_id == TaskExtended.task_id, isouter=True)) \
+        .where(CloneEvent.id.is_(None))
 
-    root_tasks = q_root_tasks \
+    # Apply sorts
+    for sort in sorts:
+        field = getattr(TaskExtended, sort.column)
+        fn = None
+        direction = SortDirection.from_str(sort.direction)
+        if direction == SortDirection.ASC:
+            fn = asc(field)
+        else:
+            fn = desc(field)
+        stmt = stmt.order_by(fn)
+
+    for search in searchs:
+        field = getattr(TaskExtended, search.column)
+        term = search.term
+        stmt = stmt.where(field.like(f"%{term}%"))
+
+    stmt = stmt.order_by(asc(TaskExtended.id)) # XXX: important
+    return stmt
+
+def _tasks_with_clones(tasks: Select[TaskIdTable]):
+    """
+    Lists table of tasks id:
+    | clone | src | root |
+    clone: being the clone tasks, which have src
+    root being the original task id in cast of transitive clones
+    """
+
+    root_tasks = select(
+        TaskExtended.task_id.label("clone").cast(String),
+        TaskExtended.task_id.label("src").cast(String),
+        TaskExtended.task_id.label("root").cast(String),
+    ).select_from(tasks.subquery())
+
+    cte = root_tasks \
         .cte("cte", recursive=True)
-    
-    # clones
+
     clones = select(
-        ce.clone_id.label('clone').cast(String),
-        ce.task_id.label('src').cast(String),
-        root_tasks.c.racine.label('racine').cast(String),
-        # text("'clone'"),
+        CloneEvent.clone_id.label('clone').cast(String),
+        CloneEvent.task_id.label('src').cast(String),
+        cte.c.root.label('root').cast(String),
     ) \
-    .select_from(join(ce, root_tasks, ce.task_id == root_tasks.c.clone))
+        .select_from(join(CloneEvent, cte, CloneEvent.task_id == cte.c.clone)) \
 
-    union_root_clones = root_tasks.union_all(clones)
+    root_with_clones = root_tasks.union_all(clones)
+    return root_with_clones
 
-    a_racine = aliased(TaskExtended)
+def result_page_exp(
+        pageSize: int,
+        pageNumber: int,
+        sorts: list[SortField],
+        searchs: list[SearchField],
+        session: Session
+    ) -> ListResult:
+    tasks = _tasks(sorts, searchs)
+
+    total = session.query(func.count()).select_from(tasks.subquery()).scalar()
+
+    limit = pageSize
+    offset = pageNumber*pageSize
+    tasks = tasks.limit(limit)
+    tasks = tasks.offset(offset)
+
+    # _subresult = session.execute(tasks)
+    # for _sub in _subresult:
+    #     print(_sub)
+
+    # TODO: debug limit 1
+    tasks_with_clones = _tasks_with_clones(tasks)
+
+    # _subresult = session.execute(tasks_with_clones)
+    # for _sub in _subresult:
+    #     print(_sub)
+
+    a_root = aliased(TaskExtended)
     a_clone = aliased(TaskExtended)
-    q = select(union_root_clones.c.racine, func.count(union_root_clones.c.clone) - 1) \
-        .select_from(union_root_clones) \
-            .join(a_clone, a_clone.task_id == union_root_clones.c.clone, isouter=True) \
-            .join(a_racine, a_racine.task_id == union_root_clones.c.racine, isouter=True) \
-            .group_by(union_root_clones.c.racine)
 
-    result = session.execute(q)
-    # result = session.execute(q_root_tasks)
-    # result = session.execute(select("*").select_from(union_root_clones))
+    a_root_fields = ListResultRow.fields_to_select(a_root)
+    a_clone_fields = ListResultRow.fields_to_select(a_clone)
 
-    r = []
-    for row in result:
-        r.append(RowExp(row[0], row[1]))
+    q = select(
+        *a_root_fields,
+        *a_clone_fields,
+        tasks_with_clones.c.clone, 
+        tasks_with_clones.c.src, 
+        tasks_with_clones.c.root, 
+    ) \
+        .select_from(tasks_with_clones) \
+            .join(a_clone, a_clone.task_id == tasks_with_clones.c.clone, isouter=True) \
+            .join(a_root, a_root.task_id == tasks_with_clones.c.root, isouter=True) \
 
-    return r
+    q_result = session.execute(q)
+
+    task_index: Dict[str, ListResultRow] = {}
+
+    # Construct the DTOs
+    result_rows: list[ListResultRow] = []
+    for row in q_result:
+        root_args = list(row[0:len(a_root_fields)])
+        root_args.append([])
+
+        offset = len(a_root_fields)
+
+        clone_args = list(row[offset:offset + len(a_clone_fields)])
+        clone_args.append([])
+
+        offset += len(a_clone_fields)
+
+        clone_tbl_args = row[offset:offset + 3]
+
+        root = ListResultRow.from_list(root_args)
+        clone = ListResultRow.from_list(clone_args)
+        (clone_taskid, src_taskid, root_taskid) = clone_tbl_args
+
+        if clone_taskid == root_taskid: # Task is a root without a clone
+            task_index[root_taskid] = root
+            result_rows.append(root)
+            continue
+
+        indexed_root = task_index[root_taskid]
+        indexed_root.clones.append(clone)
+
+    result = ListResult(total = total, page_number=pageNumber, page_size=pageSize, data=result_rows)
+    return result
 
 def result_page(
     pageSize: int,

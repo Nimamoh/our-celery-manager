@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from enum import StrEnum
 from datetime import datetime
+from typing_extensions import deprecated
 
+@deprecated("A deplacer dans dto")
 class Status(StrEnum):
     PENDING = 'PENDING'
     RECEIVED = 'RECEIVED'
@@ -13,6 +15,7 @@ class Status(StrEnum):
     RETRY = 'RETRY'
     IGNORED = 'IGNORED'
 
+@deprecated("A deplacer dans dto")
 @dataclass
 class TaskResult:
     task_id: str
@@ -29,6 +32,7 @@ class TaskResult:
 
     nb_clones: int
 
+@deprecated("A deplacer dans dto")
 @dataclass
 class TaskResultPage:
     total: int
