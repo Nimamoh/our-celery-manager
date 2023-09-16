@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from our_celery_manager.app.models.task.TaskResult import TaskResultPage
-from our_celery_manager.app.service.celery.results import result_page, clone_and_send_task
+from our_celery_manager.app.service.celery.results import RowExp, result_page, clone_and_send_task, result_page_exp
 
 from .service.celery.model import SearchField, SortField
 from .settings import SettingsApiResponse, settings
@@ -70,6 +70,10 @@ async def task_result_page(
     results = result_page(size, n, sorts, searchs, session)
     return results
 
+@app.get("/results/page/experiment", response_model=list[RowExp])
+async def task_result_page_exp(request: Request, session: Session = Depends(get_db)):
+    r = result_page_exp(session)
+    return r
 
 @app.post("/clone_and_send/{id}")
 async def clone_and_send(request: Request, id: str, session: Session = Depends(get_db)):
