@@ -44,13 +44,15 @@ const copyTracebackOnClipBoard = () => {
 </div>
 
 <Dialog v-model:visible="visible" modal>
-    <pre>
-        {{ traceback }}
-    </pre>
+    <div class="tb-content">
+        <pre class="tb-pre">
+            {{ traceback }}
+        </pre>
 
-    <br>
+        <br>
 
-    <Button @click="copyTracebackOnClipBoard()" icon="pi pi-copy" severity="secondary"></Button>
+        <Button @click="copyTracebackOnClipBoard()" icon="pi pi-copy" severity="secondary"></Button>
+    </div>
 </Dialog>
 
 </template>

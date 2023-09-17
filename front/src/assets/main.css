@@ -35,3 +35,15 @@
 .red {
   color: red;
 }
+
+/* traceback */
+.tb-content {
+  width: 90vw;
+  max-height: 90vh;
+}
+
+.tb-pre {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
