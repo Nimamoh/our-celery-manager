@@ -34,6 +34,11 @@ class TaskResult(OCMBaseModel):
 
     result: str | None
 
+    def __init__(self, **data):
+        if 'result' in data: # Cast to string
+            data['result'] = str(data['result'])
+        super().__init__(**data)
+
     @staticmethod
     def fields_to_select(model: TaskExtended):
         return (
