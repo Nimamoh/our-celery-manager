@@ -15,7 +15,7 @@ from our_celery_manager.app.service.celery.results import result_page, clone_and
 from .service.celery.model import SearchField, SortField
 from .settings import SettingsApiResponse, settings
 
-from .startup_checks import pre_startup_check, pre_startup_db_migration
+from .startup_checks import pre_startup_check, pre_startup_db_migration, pre_startup_logconf
 
 from .db import SessionLocal
 
@@ -23,10 +23,10 @@ import logging
 
 pre_startup_check()
 pre_startup_db_migration()
+pre_startup_logconf()
 
-logging.basicConfig(level=logging.INFO, force=True)
 logger = logging.getLogger(__name__)
-logger.info("OK")
+logger.info("Application up and running 💪")
 
 app = FastAPI(root_path=settings.root_path)
 

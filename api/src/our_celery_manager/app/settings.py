@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     backend: str
     """The backend url to retrieve task results"""
 
+    debug: bool = False
+    """Debug mode which control some things like printing SQL requests."""
     
     def hiding_passwords(self):
         _settings = Settings()

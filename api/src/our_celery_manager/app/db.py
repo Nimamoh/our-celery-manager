@@ -7,7 +7,8 @@ from .models import Base
 
 logger = logging.getLogger(__name__)
 
-engine = create_engine(settings.db_connstring(), echo=True)
+engine = create_engine(settings.db_connstring(), logging_name="OCM Engine")
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def ocm_metadata():
