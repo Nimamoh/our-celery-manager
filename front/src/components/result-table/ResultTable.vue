@@ -135,10 +135,17 @@ const onFilter = async (event) => {
     await load();
 }
 
+//@ts-ignore
+const onRowExpand = async (event) => {
+    const task: ListResultRow = event.data;
+    expandedRows.value = [task];
+}
+
 /* Objets de résultats */
 const loading_results = ref(false);
 const totalRecords = ref(0);
 let rows: Ref<ListResultRow[]> = ref([]);
+let expandedRows: Ref<ListResultRow[]> = ref([]);
 
 const api: DefaultApi = inject('api')!
 
@@ -169,9 +176,11 @@ const onHide = (column) => { column.hidden = true; }
 
 <template>
     <div class="card flex flex-wrap justify-content-center w-100">
-        <DataTable showGridlines stripedRows :value="rows" lazy paginator :rows="page_get_request.size"
+        <DataTable showGridlines stripedRows :value="rows" v-model:expanded-rows="expandedRows"
+            lazy paginator :rows="page_get_request.size"
             v-model:filters="filters" :totalRecords="totalRecords" :loading="loading_results" @page="onPage($event)"
             @sort="onSort($event)" @filter="onFilter($event)" filterDisplay="row"
+            @row-expand="onRowExpand"
             :globalFilterFields="['task_id', 'name', 'args', 'kwargs', 'date_done', 'traceback', 'result', 'status']"
             :multi-sort-meta="multiSortMeta" sortMode="multiple" removableSort>
             <template #header>
@@ -180,6 +189,8 @@ const onHide = (column) => { column.hidden = true; }
                     <Button @click="load()" icon="pi pi-refresh" rounded raised />
                 </div>
             </template>
+
+            <Column expander style="width: 2rem" />
 
             <Column v-for="col of metaRows" :field="col.field" :header="col.header" :showFilterMenu="false"
                 filterMatchMode="contains" :sortable="col.sortable">
@@ -253,6 +264,27 @@ const onHide = (column) => { column.hidden = true; }
                     </Button>
                 </template>
             </Column>
+
+            <!-- TODO: find a way to use same data table for expansion -->
+            <template #expansion="task">
+                <div class="p-3">
+
+                    <h5>Clones</h5>
+
+                    <DataTable :value="task.data.clones">
+                        <Column field="task_id" header="Task id"></Column>
+                        <Column field="date_done" header="Ended in">
+                            <template #body="{ data }">
+                                {{ format_date(data["date_done"]) }}
+                            </template>
+                        </Column>
+                        <Column field="status" header="Status">
+                        </Column>
+                    </DataTable>
+
+                </div>
+            </template>
+
         </DataTable>
     </div>
 </template>
