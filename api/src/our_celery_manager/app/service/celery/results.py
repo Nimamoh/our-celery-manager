@@ -84,7 +84,7 @@ def _tasks_with_clones(tasks: Select[TaskIdTable]):
     root_with_clones = root_tasks.union_all(clones)
     return root_with_clones
 
-def result_page_exp(
+def result_page(
         pageSize: int,
         pageNumber: int,
         sorts: list[SortField],

@@ -11,7 +11,7 @@ from our_celery_manager.app.models.dtos.tasks import ListResult
 
 from our_celery_manager.app.service.celery.results import (
     clone_and_send_task,
-    result_page_exp,
+    result_page,
 )
 
 from .service.celery.model import SearchField, SortField
@@ -65,7 +65,7 @@ async def info():
 
 
 @app.get("/results/page", response_model=ListResult)
-async def task_result_page_exp(
+async def task_result_page(
     request: Request,
     n: int = 0,
     size: int = 10,
@@ -75,7 +75,7 @@ async def task_result_page_exp(
 ):
     sorts = [SortField.from_api_str(s) for s in sort if s is not None and s != ""]
     searchs = [SearchField.from_api_str(s) for s in search if s is not None and s != ""]
-    r = result_page_exp(size, n, sorts, searchs, session)
+    r = result_page(size, n, sorts, searchs, session)
     return r
 
 
