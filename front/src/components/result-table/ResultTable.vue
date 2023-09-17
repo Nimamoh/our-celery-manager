@@ -5,7 +5,7 @@ import { inject, ref, type Ref } from 'vue';
 import type {
     DefaultApi,
     TaskResultPageResultsPageGetRequest as PageGetRequest,
-    TaskResult,
+    ListResultRow,
 } from '@/generated/api';
 
 import { useToast } from 'primevue/usetoast';
@@ -16,6 +16,7 @@ import Column from 'primevue/column';
 import Button from 'primevue/button';
 
 import TracebackVue from '@/components/result-table/traceback/Traceback.vue'
+import CloneColumnVue from '@/components/result-table/clones-column/CloneColumn.vue'
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -25,11 +26,11 @@ let metaRows = ref([
     { field: 'name', header: 'Name', hidden: false, sortable: true, disableHideable: true },
     { field: 'args', header: 'args', sortable: true, hidden: true },
     { field: 'kwargs', header: 'kwargs', sortable: true, hidden: true },
-    { field: 'date_done', header: 'Ended in', sortable: true, hidden: true },
+    { field: 'date_done', header: 'Ended in', sortable: true, hidden: false },
     { field: 'traceback', header: 'Traceback', sortable: true, hidden: false, disableHideable: true },
     { field: 'result', header: 'Result', sortable: true, hidden: true },
     { field: 'status', header: 'Status', sortable: true, hidden: false },
-    { field: 'nb_clones', header: 'Nombre clones', hidden: false, disableHideable: true },
+    { field: 'clones', header: 'Nombre de clones', hidden: false, disableHideable: true },
 ]);
 const filters = ref({
     'task_id': '',
@@ -49,19 +50,19 @@ const format_date = (date: string) => {
 /* Objets et callback pour les requêtes */
 const page_get_request: Ref<PageGetRequest> = ref({ n: 0, size: 10 })
 
-const replayable = (task: TaskResult) => {
+const replayable = (task: ListResultRow) => {
     return task.name != null;
 }
 const currently_cloning_and_sending = ref(false);
 
-const onCloneAndSend = async (task: TaskResult) => {
+const onCloneAndSend = async (task: ListResultRow) => {
     confirm.require({
         message: `Do you really want to replay task ${task.task_id} ?`,
         accept: () => _cloneAndReplay(task),
         reject: () => { },
     })
 }
-const _cloneAndReplay = async (task: TaskResult) => {
+const _cloneAndReplay = async (task: ListResultRow) => {
 
     currently_cloning_and_sending.value = true;
     try {
@@ -137,7 +138,7 @@ const onFilter = async (event) => {
 /* Objets de résultats */
 const loading_results = ref(false);
 const totalRecords = ref(0);
-let rows: Ref<TaskResult[]> = ref([]);
+let rows: Ref<ListResultRow[]> = ref([]);
 
 const api: DefaultApi = inject('api')!
 
@@ -230,6 +231,10 @@ const onHide = (column) => { column.hidden = true; }
 
                     <template v-else-if="col.field == 'traceback' || col.field == 'result'">
                         <TracebackVue :traceback="data[col.field]" />
+                    </template>
+
+                    <template v-else-if="col.field == 'clones'">
+                        <CloneColumnVue :clones="data[col.field]" />
                     </template>
 
                     <!-- OTHERS -->
