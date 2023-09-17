@@ -7,15 +7,21 @@ from fastapi import FastAPI, Query, Request, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.staticfiles import StaticFiles
-from our_celery_manager.app.models.dtos.tasks import ListResult, ListResultRow
+from our_celery_manager.app.models.dtos.tasks import ListResult
 
-from our_celery_manager.app.models.task.TaskResult import TaskResultPage
-from our_celery_manager.app.service.celery.results import result_page, clone_and_send_task, result_page_exp
+from our_celery_manager.app.service.celery.results import (
+    clone_and_send_task,
+    result_page_exp,
+)
 
 from .service.celery.model import SearchField, SortField
 from .settings import SettingsApiResponse, settings
 
-from .startup_checks import pre_startup_check, pre_startup_db_migration, pre_startup_logconf
+from .startup_checks import (
+    pre_startup_check,
+    pre_startup_db_migration,
+    pre_startup_logconf,
+)
 
 from .db import SessionLocal
 
@@ -30,6 +36,7 @@ logger.info("Application up and running 💪")
 
 app = FastAPI(root_path=settings.root_path)
 
+
 def get_db():
     """
     Ceates a database session.
@@ -41,6 +48,7 @@ def get_db():
     finally:
         db.close()
 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -50,15 +58,14 @@ app.add_middleware(
 )
 
 
-
 @app.get("/info", response_model=SettingsApiResponse)
 async def info():
     displayable_settings = settings.hiding_passwords()
     return SettingsApiResponse.from_settings(displayable_settings)
 
 
-@app.get("/old/results/page", response_model=TaskResultPage)
-async def task_result_page(
+@app.get("/results/page", response_model=ListResult)
+async def task_result_page_exp(
     request: Request,
     n: int = 0,
     size: int = 10,
@@ -68,22 +75,9 @@ async def task_result_page(
 ):
     sorts = [SortField.from_api_str(s) for s in sort if s is not None and s != ""]
     searchs = [SearchField.from_api_str(s) for s in search if s is not None and s != ""]
-    results = result_page(size, n, sorts, searchs, session)
-    return results
-
-@app.get("/results/page", response_model=ListResult)
-async def task_result_page_exp(
-    request: Request,
-    n: int = 0,
-    size: int = 10,
-    sort: Annotated[list[str], Query()] = [],
-    search: Annotated[list[str], Query()] = [],
-    session: Session = Depends(get_db)
-):
-    sorts = [SortField.from_api_str(s) for s in sort if s is not None and s != ""]
-    searchs = [SearchField.from_api_str(s) for s in search if s is not None and s != ""]
     r = result_page_exp(size, n, sorts, searchs, session)
     return r
+
 
 @app.post("/clone_and_send/{id}")
 async def clone_and_send(request: Request, id: str, session: Session = Depends(get_db)):
@@ -92,8 +86,9 @@ async def clone_and_send(request: Request, id: str, session: Session = Depends(g
     return r
 
 
-static_path = Path(__file__).parent / 'static'
+static_path = Path(__file__).parent / "static"
 app.mount("/", StaticFiles(directory=static_path, html=True), name="static")
+
 
 @app.exception_handler(Exception)
 def handle_exception(req, exception):
