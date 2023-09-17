@@ -66,11 +66,12 @@ def _tasks_with_clones(tasks: Select[TaskIdTable]):
     root being the original task id in cast of transitive clones
     """
 
+    subq = tasks.subquery()
     root_tasks = select(
-        TaskExtended.task_id.label("clone").cast(String),
-        TaskExtended.task_id.label("src").cast(String),
-        TaskExtended.task_id.label("root").cast(String),
-    ).select_from(tasks.subquery())
+        subq.c.task_id.label("clone").cast(String),
+        subq.c.task_id.label("src").cast(String),
+        subq.c.task_id.label("root").cast(String),
+    ).select_from(subq)
 
     cte = root_tasks \
         .cte("cte", recursive=True)
@@ -101,16 +102,7 @@ def result_page_exp(
     tasks = tasks.limit(limit)
     tasks = tasks.offset(offset)
 
-    # _subresult = session.execute(tasks)
-    # for _sub in _subresult:
-    #     print(_sub)
-
-    # TODO: debug limit 1
     tasks_with_clones = _tasks_with_clones(tasks)
-
-    # _subresult = session.execute(tasks_with_clones)
-    # for _sub in _subresult:
-    #     print(_sub)
 
     a_root = aliased(TaskExtended)
     a_clone = aliased(TaskExtended)
