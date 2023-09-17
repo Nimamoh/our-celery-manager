@@ -16,16 +16,16 @@
 import * as runtime from '../runtime';
 import type {
   HTTPValidationError,
+  ListResult,
   SettingsApiResponse,
-  TaskResultPage,
 } from '../models/index';
 import {
     HTTPValidationErrorFromJSON,
     HTTPValidationErrorToJSON,
+    ListResultFromJSON,
+    ListResultToJSON,
     SettingsApiResponseFromJSON,
     SettingsApiResponseToJSON,
-    TaskResultPageFromJSON,
-    TaskResultPageToJSON,
 } from '../models/index';
 
 export interface CloneAndSendCloneAndSendIdPostRequest {
@@ -109,7 +109,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Task Result Page
      */
-    async taskResultPageResultsPageGetRaw(requestParameters: TaskResultPageResultsPageGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TaskResultPage>> {
+    async taskResultPageResultsPageGetRaw(requestParameters: TaskResultPageResultsPageGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListResult>> {
         const queryParameters: any = {};
 
         if (requestParameters.n !== undefined) {
@@ -137,13 +137,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => TaskResultPageFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListResultFromJSON(jsonValue));
     }
 
     /**
      * Task Result Page
      */
-    async taskResultPageResultsPageGet(requestParameters: TaskResultPageResultsPageGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TaskResultPage> {
+    async taskResultPageResultsPageGet(requestParameters: TaskResultPageResultsPageGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListResult> {
         const response = await this.taskResultPageResultsPageGetRaw(requestParameters, initOverrides);
         return await response.value();
     }

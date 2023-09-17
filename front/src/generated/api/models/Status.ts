@@ -14,7 +14,7 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * An enumeration.
+ * 
  * @export
  * @interface Status
  */

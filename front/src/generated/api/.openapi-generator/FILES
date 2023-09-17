@@ -1,11 +1,12 @@
+.openapi-generator-ignore
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
 models/HTTPValidationError.ts
+models/ListResult.ts
+models/ListResultRow.ts
 models/SettingsApiResponse.ts
 models/Status.ts
-models/TaskResult.ts
-models/TaskResultPage.ts
 models/ValidationError.ts
 models/index.ts
 runtime.ts
