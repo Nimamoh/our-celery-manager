@@ -23,69 +23,75 @@ import {
 /**
  * 
  * @export
- * @interface TaskResult
+ * @interface ListResultRow
  */
-export interface TaskResult {
+export interface ListResultRow {
     /**
      * 
      * @type {any}
-     * @memberof TaskResult
+     * @memberof ListResultRow
      */
     task_id: any | null;
     /**
      * 
      * @type {any}
-     * @memberof TaskResult
+     * @memberof ListResultRow
      */
     name: any | null;
     /**
      * 
      * @type {Status}
-     * @memberof TaskResult
+     * @memberof ListResultRow
      */
     status: Status;
     /**
      * 
      * @type {any}
-     * @memberof TaskResult
+     * @memberof ListResultRow
      */
     date_done: any | null;
     /**
      * 
      * @type {any}
-     * @memberof TaskResult
+     * @memberof ListResultRow
      */
     traceback: any | null;
     /**
      * 
      * @type {any}
-     * @memberof TaskResult
+     * @memberof ListResultRow
      */
     queue: any | null;
     /**
      * 
      * @type {any}
-     * @memberof TaskResult
+     * @memberof ListResultRow
      */
     args: any | null;
     /**
      * 
      * @type {any}
-     * @memberof TaskResult
+     * @memberof ListResultRow
      */
     kwargs: any | null;
     /**
      * 
      * @type {any}
-     * @memberof TaskResult
+     * @memberof ListResultRow
      */
     result: any | null;
+    /**
+     * 
+     * @type {any}
+     * @memberof ListResultRow
+     */
+    clones: any | null;
 }
 
 /**
- * Check if a given object implements the TaskResult interface.
+ * Check if a given object implements the ListResultRow interface.
  */
-export function instanceOfTaskResult(value: object): boolean {
+export function instanceOfListResultRow(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "task_id" in value;
     isInstance = isInstance && "name" in value;
@@ -96,15 +102,16 @@ export function instanceOfTaskResult(value: object): boolean {
     isInstance = isInstance && "args" in value;
     isInstance = isInstance && "kwargs" in value;
     isInstance = isInstance && "result" in value;
+    isInstance = isInstance && "clones" in value;
 
     return isInstance;
 }
 
-export function TaskResultFromJSON(json: any): TaskResult {
-    return TaskResultFromJSONTyped(json, false);
+export function ListResultRowFromJSON(json: any): ListResultRow {
+    return ListResultRowFromJSONTyped(json, false);
 }
 
-export function TaskResultFromJSONTyped(json: any, ignoreDiscriminator: boolean): TaskResult {
+export function ListResultRowFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListResultRow {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -119,10 +126,11 @@ export function TaskResultFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'args': json['args'],
         'kwargs': json['kwargs'],
         'result': json['result'],
+        'clones': json['clones'],
     };
 }
 
-export function TaskResultToJSON(value?: TaskResult | null): any {
+export function ListResultRowToJSON(value?: ListResultRow | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -140,6 +148,7 @@ export function TaskResultToJSON(value?: TaskResult | null): any {
         'args': value.args,
         'kwargs': value.kwargs,
         'result': value.result,
+        'clones': value.clones,
     };
 }
 

@@ -1,23 +1,53 @@
 from pathlib import Path
 from typing import Annotated
-from fastapi import FastAPI, Query, Request
+
+from sqlalchemy.orm import Session
+
+from fastapi import FastAPI, Query, Request, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.staticfiles import StaticFiles
+from our_celery_manager.app.models.dtos.tasks import ListResult
 
-from our_celery_manager.app.models.task.TaskResult import TaskResultPage
+from our_celery_manager.app.service.celery.results import (
+    clone_and_send_task,
+    result_page,
+)
 
 from .service.celery.model import SearchField, SortField
 from .settings import SettingsApiResponse, settings
 
-from .service.celery.results import result_page, clone_and_send_task
-from .startup_checks import pre_startup_check, pre_startup_db_migration
+from .startup_checks import (
+    pre_startup_check,
+    pre_startup_db_migration,
+    pre_startup_logconf,
+)
+
+from .db import SessionLocal
 
 import logging
 
-logging.basicConfig(level=logging.INFO)
+pre_startup_check()
+pre_startup_db_migration()
+pre_startup_logconf()
+
+logger = logging.getLogger(__name__)
+logger.info("Application up and running 💪")
 
 app = FastAPI(root_path=settings.root_path)
+
+
+def get_db():
+    """
+    Ceates a database session.
+    It aims at being used as a fastapi dependency. See: https://fastapi.tiangolo.com/tutorial/sql-databases/#create-a-dependency
+    """
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,9 +57,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-pre_startup_check()
-pre_startup_db_migration()
-
 
 @app.get("/info", response_model=SettingsApiResponse)
 async def info():
@@ -37,26 +64,33 @@ async def info():
     return SettingsApiResponse.from_settings(displayable_settings)
 
 
-@app.get("/results/page", response_model=TaskResultPage)
+@app.get("/results/page", response_model=ListResult)
 async def task_result_page(
     request: Request,
     n: int = 0,
     size: int = 10,
     sort: Annotated[list[str], Query()] = [],
     search: Annotated[list[str], Query()] = [],
+    session: Session = Depends(get_db),
 ):
     sorts = [SortField.from_api_str(s) for s in sort if s is not None and s != ""]
     searchs = [SearchField.from_api_str(s) for s in search if s is not None and s != ""]
-    results = result_page(size, n, sorts, searchs)
-    return results
-
-
-@app.post("/clone_and_send/{id}")
-async def clone_and_send(request: Request, id: str):
-    """Clone la tâche et la renvoie sur le broker"""
-    r = clone_and_send_task(id)
+    r = result_page(size, n, sorts, searchs, session)
     return r
 
 
-static_path = Path(__file__).parent / 'static'
+@app.post("/clone_and_send/{id}")
+async def clone_and_send(request: Request, id: str, session: Session = Depends(get_db)):
+    """Clone la tâche et la renvoie sur le broker"""
+    r = clone_and_send_task(id, session)
+    return r
+
+
+static_path = Path(__file__).parent / "static"
 app.mount("/", StaticFiles(directory=static_path, html=True), name="static")
+
+
+@app.exception_handler(Exception)
+def handle_exception(req, exception):
+    logger.exception(exception, exc_info=exception, stack_info=True)
+    return Response("ISE", status_code=500)

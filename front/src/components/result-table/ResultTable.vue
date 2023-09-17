@@ -5,7 +5,7 @@ import { inject, ref, type Ref } from 'vue';
 import type {
     DefaultApi,
     TaskResultPageResultsPageGetRequest as PageGetRequest,
-    TaskResult,
+    ListResultRow,
 } from '@/generated/api';
 
 import { useToast } from 'primevue/usetoast';
@@ -16,19 +16,21 @@ import Column from 'primevue/column';
 import Button from 'primevue/button';
 
 import TracebackVue from '@/components/result-table/traceback/Traceback.vue'
+import CloneColumnVue from '@/components/result-table/clones-column/CloneColumn.vue'
 
 const toast = useToast();
 const confirm = useConfirm();
 
 let metaRows = ref([
-    { field: 'task_id', header: 'Task ID', hidden: false },
-    { field: 'name', header: 'Name', hidden: false, disableHideable: true },
-    { field: 'args', header: 'args', hidden: true },
-    { field: 'kwargs', header: 'kwargs', hidden: true },
-    { field: 'date_done', header: 'Ended in', hidden: true },
-    { field: 'traceback', header: 'Traceback', hidden: false, disableHideable: true },
-    { field: 'result', header: 'Result', hidden: true },
-    { field: 'status', header: 'Status', hidden: false },
+    { field: 'task_id', header: 'Task ID', hidden: false, sortable: true },
+    { field: 'name', header: 'Name', hidden: false, sortable: true, disableHideable: true },
+    { field: 'args', header: 'args', sortable: true, hidden: true },
+    { field: 'kwargs', header: 'kwargs', sortable: true, hidden: true },
+    { field: 'date_done', header: 'Ended in', sortable: true, hidden: false },
+    { field: 'traceback', header: 'Traceback', sortable: true, hidden: false, disableHideable: true },
+    { field: 'result', header: 'Result', sortable: true, hidden: true },
+    { field: 'status', header: 'Status', sortable: true, hidden: false },
+    { field: 'clones', header: 'Nombre de clones', hidden: false, disableHideable: true },
 ]);
 const filters = ref({
     'task_id': '',
@@ -48,19 +50,19 @@ const format_date = (date: string) => {
 /* Objets et callback pour les requêtes */
 const page_get_request: Ref<PageGetRequest> = ref({ n: 0, size: 10 })
 
-const replayable = (task: TaskResult) => {
+const replayable = (task: ListResultRow) => {
     return task.name != null;
 }
 const currently_cloning_and_sending = ref(false);
 
-const onCloneAndSend = async (task: TaskResult) => {
+const onCloneAndSend = async (task: ListResultRow) => {
     confirm.require({
         message: `Do you really want to replay task ${task.task_id} ?`,
         accept: () => _cloneAndReplay(task),
         reject: () => { },
     })
 }
-const _cloneAndReplay = async (task: TaskResult) => {
+const _cloneAndReplay = async (task: ListResultRow) => {
 
     currently_cloning_and_sending.value = true;
     try {
@@ -133,10 +135,17 @@ const onFilter = async (event) => {
     await load();
 }
 
+//@ts-ignore
+const onRowExpand = async (event) => {
+    const task: ListResultRow = event.data;
+    expandedRows.value = [task];
+}
+
 /* Objets de résultats */
 const loading_results = ref(false);
 const totalRecords = ref(0);
-let rows: Ref<TaskResult[]> = ref([]);
+let rows: Ref<ListResultRow[]> = ref([]);
+let expandedRows: Ref<ListResultRow[]> = ref([]);
 
 const api: DefaultApi = inject('api')!
 
@@ -167,9 +176,11 @@ const onHide = (column) => { column.hidden = true; }
 
 <template>
     <div class="card flex flex-wrap justify-content-center w-100">
-        <DataTable showGridlines stripedRows :value="rows" lazy paginator :rows="page_get_request.size"
+        <DataTable showGridlines stripedRows :value="rows" v-model:expanded-rows="expandedRows"
+            lazy paginator :rows="page_get_request.size"
             v-model:filters="filters" :totalRecords="totalRecords" :loading="loading_results" @page="onPage($event)"
             @sort="onSort($event)" @filter="onFilter($event)" filterDisplay="row"
+            @row-expand="onRowExpand"
             :globalFilterFields="['task_id', 'name', 'args', 'kwargs', 'date_done', 'traceback', 'result', 'status']"
             :multi-sort-meta="multiSortMeta" sortMode="multiple" removableSort>
             <template #header>
@@ -179,8 +190,10 @@ const onHide = (column) => { column.hidden = true; }
                 </div>
             </template>
 
+            <Column expander style="width: 2rem" />
+
             <Column v-for="col of metaRows" :field="col.field" :header="col.header" :showFilterMenu="false"
-                filterMatchMode="contains" sortable>
+                filterMatchMode="contains" :sortable="col.sortable">
 
                 <template #header>
                     <span class="p-column-title" v-if="!col.disableHideable">
@@ -231,6 +244,10 @@ const onHide = (column) => { column.hidden = true; }
                         <TracebackVue :traceback="data[col.field]" />
                     </template>
 
+                    <template v-else-if="col.field == 'clones'">
+                        <CloneColumnVue :clones="data[col.field]" />
+                    </template>
+
                     <!-- OTHERS -->
                     <template v-else>
                         {{ data[col.field] }}
@@ -247,6 +264,27 @@ const onHide = (column) => { column.hidden = true; }
                     </Button>
                 </template>
             </Column>
+
+            <!-- TODO: find a way to use same data table for expansion -->
+            <template #expansion="task">
+                <div class="p-3">
+
+                    <h5>Clones</h5>
+
+                    <DataTable :value="task.data.clones">
+                        <Column field="task_id" header="Task id"></Column>
+                        <Column field="date_done" header="Ended in">
+                            <template #body="{ data }">
+                                {{ format_date(data["date_done"]) }}
+                            </template>
+                        </Column>
+                        <Column field="status" header="Status">
+                        </Column>
+                    </DataTable>
+
+                </div>
+            </template>
+
         </DataTable>
     </div>
 </template>

@@ -15,12 +15,8 @@ Consists of two applications:
 | BROKER           | Celery broker address                                                                                                                  | `redis://redis:6379/0`                                  |
 | BACKEND          | Result backend address                                                                                                                 | `db+postgresql://user:password@127.0.0.1:5432/database` |
 | ROOT_PATH        | The `path prefix` for a potential proxy, see [FastAPI - behind a proxy](https://https://fastapi.tiangolo.com/advanced/behind-a-proxy/) | `/prefix/`                                              |
-| Name             | Description                                                                                                                            |                                                         |
-|------------------|----------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
-| APPLICATION_NAME | Name of the application                                                                                                                | `Our celery manager`                                    |
-| BROKER           | Celery broker address                                                                                                                  | `redis://redis:6379/0`                                  |
-| BACKEND          | Result backend address                                                                                                                 | `db+postgresql://user:password@127.0.0.1:5432/database` |
-| ROOT_PATH        | The `path prefix` for a potential proxy, see [FastAPI - behind a proxy](https://https://fastapi.tiangolo.com/advanced/behind-a-proxy/) | `/prefix/`                                              |
+| DEBUG            | Flag for debug mode                                                                                                                    |                                                         |
+
 
 ## API Application
 
@@ -71,6 +67,8 @@ Start the API locally and run the following command:
 
 ```fish
 # ⚠ this is fish shell
+cd front/
+rm -rf src/generated
 docker run --rm --network="host" --add-host host.docker.internal:host-gateway -v (pwd)":/local" openapitools/openapi-generator-cli generate \
         -i http://host.docker.internal:8000/openapi.json \
         -g typescript-fetch \

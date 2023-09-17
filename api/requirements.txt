@@ -122,6 +122,8 @@ sqlalchemy[pymysql]==2.0.20
     #   alembic
     #   celery
     #   our-celery-manager (pyproject.toml)
+sqlparse==0.4.4
+    # via our-celery-manager (pyproject.toml)
 starlette==0.27.0
     # via fastapi
 typer==0.9.0

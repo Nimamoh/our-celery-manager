@@ -16,39 +16,39 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface TaskResultPage
+ * @interface ListResult
  */
-export interface TaskResultPage {
+export interface ListResult {
     /**
      * 
      * @type {any}
-     * @memberof TaskResultPage
+     * @memberof ListResult
      */
     total: any | null;
     /**
      * 
      * @type {any}
-     * @memberof TaskResultPage
+     * @memberof ListResult
      */
     page_number: any | null;
     /**
      * 
      * @type {any}
-     * @memberof TaskResultPage
+     * @memberof ListResult
      */
     page_size: any | null;
     /**
      * 
      * @type {any}
-     * @memberof TaskResultPage
+     * @memberof ListResult
      */
     data: any | null;
 }
 
 /**
- * Check if a given object implements the TaskResultPage interface.
+ * Check if a given object implements the ListResult interface.
  */
-export function instanceOfTaskResultPage(value: object): boolean {
+export function instanceOfListResult(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "total" in value;
     isInstance = isInstance && "page_number" in value;
@@ -58,11 +58,11 @@ export function instanceOfTaskResultPage(value: object): boolean {
     return isInstance;
 }
 
-export function TaskResultPageFromJSON(json: any): TaskResultPage {
-    return TaskResultPageFromJSONTyped(json, false);
+export function ListResultFromJSON(json: any): ListResult {
+    return ListResultFromJSONTyped(json, false);
 }
 
-export function TaskResultPageFromJSONTyped(json: any, ignoreDiscriminator: boolean): TaskResultPage {
+export function ListResultFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListResult {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -75,7 +75,7 @@ export function TaskResultPageFromJSONTyped(json: any, ignoreDiscriminator: bool
     };
 }
 
-export function TaskResultPageToJSON(value?: TaskResultPage | null): any {
+export function ListResultToJSON(value?: ListResult | null): any {
     if (value === undefined) {
         return undefined;
     }

@@ -15,6 +15,9 @@ dependencies = [
     # Db drivers
     "psycopg2 ~= 2.9",
     "psycopg ~= 3.1",
+
+    #
+    "sqlparse ~= 0.4"
 ]
 
 [project.optional-dependencies]

@@ -3,6 +3,10 @@ from datetime import datetime
 from enum import StrEnum
 
 from celery.backends.database.models import TaskExtended
+from our_celery_manager.app.models.ocm.clone import CloneEvent
+
+from sqlalchemy.orm import aliased
+from sqlalchemy import func
 
 #region: service layer
 @dataclass
@@ -62,7 +66,11 @@ class DbResultRow:
 
     result: object
 
+    nb_clones: int
+
 """Liste des champs de selection pour la table des taches"""
+cloned = aliased(CloneEvent)
+being_a_clone = aliased(CloneEvent)
 db_result_select_fields =  (
     TaskExtended.task_id,
     TaskExtended.name,
@@ -73,5 +81,6 @@ db_result_select_fields =  (
     TaskExtended.args,
     TaskExtended.kwargs,
     TaskExtended.result,
+    func.count(cloned.id),
 )
 # endregion
