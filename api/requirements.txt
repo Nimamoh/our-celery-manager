@@ -77,8 +77,12 @@ orjson==3.9.7
     # via fastapi
 prompt-toolkit==3.0.39
     # via click-repl
-psycopg==3.1.10
+psycopg[c,pool]==3.1.10
     # via our-celery-manager (pyproject.toml)
+psycopg-c==3.1.10
+    # via psycopg
+psycopg-pool==3.1.7
+    # via psycopg
 psycopg2==2.9.7
     # via our-celery-manager (pyproject.toml)
 pydantic==2.3.0
@@ -133,6 +137,7 @@ typing-extensions==4.7.1
     #   alembic
     #   fastapi
     #   psycopg
+    #   psycopg-pool
     #   pydantic
     #   pydantic-core
     #   sqlalchemy

@@ -26,7 +26,7 @@ Consists of two applications:
 pip install pip-tools
 pip-compile \
       -o requirements.txt \
-      pyproject.toml
+      pyproject.toml && \
 pip-compile \
       --extra dev \
       -o dev-requirements.txt \
