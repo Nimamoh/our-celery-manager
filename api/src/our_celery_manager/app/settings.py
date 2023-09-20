@@ -37,7 +37,6 @@ class Settings(BaseSettings):
         if not self.backend.startswith(prefix):
             raise ValueError(f"result backend must be in form {prefix}")
         connstr = self.backend.removeprefix(prefix)
-        connstr = connstr.split('?')[0]
         return connstr
 
 def _hide_url_password(s):
