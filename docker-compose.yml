@@ -47,6 +47,15 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=database
+  
+  mariadb:
+    image: mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: passwd
+      MARIADB_USER: user
+      MARIADB_PASSWORD: passwd
+    ports:
+      - 3306:3306
 
   traefik:
     image: traefik:v2.4
