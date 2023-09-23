@@ -138,8 +138,13 @@ def result_page(
 
         clone_tbl_args = row[offset:offset + 3]
 
-        root = ListResultRow.from_list(root_args)
-        clone = ListResultRow.from_list(clone_args)
+        try:
+            root = ListResultRow.from_list(root_args)
+            clone = ListResultRow.from_list(clone_args)
+        except Exception:
+            logger.warning("Impossible to retrieve task from result backend. Skipping.")
+            continue
+
         (clone_taskid, src_taskid, root_taskid) = clone_tbl_args
 
         if clone_taskid == root_taskid: # Task is a root without a clone
