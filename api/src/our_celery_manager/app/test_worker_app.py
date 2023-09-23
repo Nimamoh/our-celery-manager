@@ -1,4 +1,4 @@
-"""Une application celery de test qui peut être utilisé comme worker"""
+"""Test worker for sending tasks in dev mode"""
 
 from celery import Celery
 import time
