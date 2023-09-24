@@ -1,4 +1,5 @@
 from typing import Dict, Tuple
+from our_celery_manager.app import is_iterable_empty
 from our_celery_manager.app.models.dtos.tasks import ListResultRow
 from our_celery_manager.app.service.ocm_taskmeta import OcmTaskMetaService
 from . import logger
@@ -138,12 +139,12 @@ def result_page(
 
         clone_tbl_args = row[offset:offset + 3]
 
-        try:
-            root = ListResultRow.from_list(root_args)
-            clone = ListResultRow.from_list(clone_args)
-        except Exception:
+        if is_iterable_empty(root_args) or is_iterable_empty(clone_args):
             logger.warning("Impossible to retrieve task from result backend. Skipping.")
             continue
+
+        root = ListResultRow.from_list(root_args)
+        clone = ListResultRow.from_list(clone_args)
 
         (clone_taskid, src_taskid, root_taskid) = clone_tbl_args
 
