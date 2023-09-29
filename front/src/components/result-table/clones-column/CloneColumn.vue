@@ -1,6 +1,13 @@
 <script setup lang="ts">
 
+import { type ListResultRow } from '@/generated/api/models';
+
 const props = defineProps(['clones'])
+
+const suffix = (clones: ListResultRow[]) => {
+    const successed = clones.filter(clone => clone.status == 'SUCCESS')
+    return `(with ${successed.length} succeeded)`
+}
 
 </script>
 
@@ -10,7 +17,7 @@ const props = defineProps(['clones'])
 ø
 </div>
 <div v-else>
-    {{ clones.length }}
+    {{ `${clones.length} ${suffix(clones)}` }}
 </div>
 
 </template>

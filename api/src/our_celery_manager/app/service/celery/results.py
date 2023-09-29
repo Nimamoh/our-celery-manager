@@ -62,7 +62,7 @@ def _tasks_with_clones(tasks: Select[TaskIdTable]):
     Lists table of tasks id:
     | clone | src | root |
     clone: being the clone tasks, which have src
-    root being the original task id in cast of transitive clones
+    root being the original task id in case of transitive clones
     """
 
     subq = tasks.subquery()

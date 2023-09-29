@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { inject, ref, type Ref } from 'vue';
+import { inject, reactive, ref, type Ref } from 'vue';
 
 import type {
     DefaultApi,
@@ -15,23 +15,30 @@ import InputText from 'primevue/inputtext';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
 
-import TracebackVue from '@/components/result-table/traceback/Traceback.vue'
-import CloneColumnVue from '@/components/result-table/clones-column/CloneColumn.vue'
+import TableHeaderVue from '@/components/result-table/table-header/TableHeader.vue'
+import TableBodyVue from '@/components/result-table/table-body/TableBody.vue'
 
 const toast = useToast();
 const confirm = useConfirm();
 
-let metaRows = ref([
-    { field: 'task_id', header: 'Task ID', hidden: false, sortable: true },
-    { field: 'name', header: 'Name', hidden: false, sortable: true, disableHideable: true },
-    { field: 'args', header: 'args', sortable: true, hidden: true },
-    { field: 'kwargs', header: 'kwargs', sortable: true, hidden: true },
-    { field: 'date_done', header: 'Ended in', sortable: true, hidden: false },
-    { field: 'traceback', header: 'Traceback', sortable: true, hidden: false, disableHideable: true },
-    { field: 'result', header: 'Result', sortable: true, hidden: true },
-    { field: 'status', header: 'Status', sortable: true, hidden: false },
-    { field: 'clones', header: 'Nombre de clones', hidden: false, disableHideable: true },
-]);
+const makeMetaRows = (except: string[] = []) => {
+    let rows = [
+        { field: 'task_id', header: 'Task ID', hidden: false, sortable: true },
+        { field: 'name', header: 'Name', hidden: false, sortable: true, disableHideable: true },
+        { field: 'args', header: 'args', sortable: true, hidden: true },
+        { field: 'kwargs', header: 'kwargs', sortable: true, hidden: true },
+        { field: 'date_done', header: 'Ended in', sortable: true, hidden: false },
+        { field: 'traceback', header: 'Traceback', sortable: true, hidden: false, disableHideable: true },
+        { field: 'result', header: 'Result', sortable: true, hidden: true },
+        { field: 'status', header: 'Status', sortable: true, hidden: false },
+        { field: 'clones', header: 'Number of clones', hidden: false, disableHideable: true },
+    ]
+
+    rows = rows.filter(row => !except.includes(row.field))
+
+    return reactive(rows)
+}
+
 const filters = ref({
     'task_id': '',
     'name': '',
@@ -42,10 +49,6 @@ const filters = ref({
     // 'result': '',
     'status': '',
 });
-
-const format_date = (date: string) => {
-    return new Date(date).toLocaleString()
-}
 
 /* Objets et callback pour les requêtes */
 const page_get_request: Ref<PageGetRequest> = ref({ n: 0, size: 10 })
@@ -164,14 +167,7 @@ async function load() {
 }
 
 const multiSortMeta: DataTableSortMeta[] = [{ 'field': 'date_done', 'order': 1 }]
-await onSort({ multiSortMeta }) // XXX: on trie initialement sur date_done
-
-/* */
-// @ts-ignore
-const onDisplay = (column) => { column.hidden = false; }
-// @ts-ignore
-const onHide = (column) => { column.hidden = true; }
-/* */
+await onSort({ multiSortMeta }) // XXX: we initially sort on date_done
 </script>
 
 <template>
@@ -192,15 +188,11 @@ const onHide = (column) => { column.hidden = true; }
 
             <Column expander style="width: 2rem" />
 
-            <Column v-for="col of metaRows" :field="col.field" :header="col.header" :showFilterMenu="false"
+            <Column v-for="col of makeMetaRows()" :field="col.field" :header="col.header" :showFilterMenu="false"
                 filterMatchMode="contains" :sortable="col.sortable">
 
                 <template #header>
-                    <span class="p-column-title" v-if="!col.disableHideable">
-                        <Button v-if="col.hidden" @click="onDisplay(col)" icon="pi pi-eye" rounded text
-                            size="large"></Button>
-                        <Button v-else @click="onHide(col)" icon="pi pi-eye-slash" rounded text size="large"></Button>
-                    </span>
+                    <TableHeaderVue :col="col"></TableHeaderVue>
                 </template>
 
                 <template #filter="{ filterModel, filterCallback }">
@@ -209,49 +201,7 @@ const onHide = (column) => { column.hidden = true; }
                 </template>
 
                 <template #body="{ data }">
-                    <!-- COLONNE CACHEE -->
-                    <template v-if="col.hidden">
-                        <template v-if="data[col.field]"> — </template>
-                        <template v-else="data[col.field]"> ø </template>
-                    </template>
-                    <!-- STATUS -->
-                    <template v-else-if="col.field == 'status'">
-                        <template v-if="data[col.field] == 'SUCCESS'">
-                            <span class="green">
-                                {{ data[col.field] }}
-                            </span>
-                        </template>
-
-                        <template v-else-if="data[col.field] == 'FAILURE'">
-                            <span class="red">
-                                {{ data[col.field] }}
-                            </span>
-                        </template>
-
-                        <template v-else>
-                            {{ data[col.field] }}
-                        </template>
-                    </template>
-
-                    <!-- DATE -->
-                    <template v-else-if="col.field == 'date_done'">
-                        {{ format_date(data[col.field]) }}
-                    </template>
-
-                    <!-- TRACEBACK -->
-
-                    <template v-else-if="col.field == 'traceback' || col.field == 'result'">
-                        <TracebackVue :traceback="data[col.field]" />
-                    </template>
-
-                    <template v-else-if="col.field == 'clones'">
-                        <CloneColumnVue :clones="data[col.field]" />
-                    </template>
-
-                    <!-- OTHERS -->
-                    <template v-else>
-                        {{ data[col.field] }}
-                    </template>
+                    <TableBodyVue :col="col" :data="data"></TableBodyVue>
                 </template>
 
             </Column>
@@ -265,20 +215,21 @@ const onHide = (column) => { column.hidden = true; }
                 </template>
             </Column>
 
-            <!-- TODO: find a way to use same data table for expansion -->
             <template #expansion="task">
                 <div class="p-3">
 
                     <h5>Clones</h5>
 
                     <DataTable :value="task.data.clones">
-                        <Column field="task_id" header="Task id"></Column>
-                        <Column field="date_done" header="Ended in">
-                            <template #body="{ data }">
-                                {{ format_date(data["date_done"]) }}
+                        <Column v-for="col of makeMetaRows(['args', 'kwargs', 'name', 'clones'])" :field="col.field" :header="col.header">
+
+                            <template #header>
+                                <TableHeaderVue :col="col"></TableHeaderVue>
                             </template>
-                        </Column>
-                        <Column field="status" header="Status">
+
+                            <template #body="{ data }">
+                                <TableBodyVue :col="col" :data="data"></TableBodyVue>
+                            </template>
                         </Column>
                     </DataTable>
 

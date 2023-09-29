@@ -23,7 +23,7 @@ Consists of two applications:
 ### Pin `requirements.txt` and `dev-requirements.txt` for reproductible builds
 
 ```bash
-pip install pip-tools
+pip install pip-tools && \
 pip-compile \
       -o requirements.txt \
       pyproject.toml && \
