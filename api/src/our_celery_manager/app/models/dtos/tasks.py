@@ -1,9 +1,5 @@
-from typing import ForwardRef
-
 from datetime import datetime
 from enum import StrEnum
-
-from pydantic import BaseModel
 
 from celery.backends.database.models import TaskExtended
 

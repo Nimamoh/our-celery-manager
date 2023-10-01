@@ -3,7 +3,7 @@
 from celery import Celery
 import time
 
-from .settings import settings
+from ..common.settings import settings
 
 celery = Celery(
     "test_app", broker=settings.broker, backend=settings.backend, result_extended=True

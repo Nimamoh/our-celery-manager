@@ -1,7 +1,7 @@
 import logging
 import sqlparse
-from our_celery_manager.app.settings import settings
-from our_celery_manager.app.tasks_queue import app as celeryapp
+from our_celery_manager.common.settings import settings
+from our_celery_manager.app.celery import celeryapp
 
 import celery
 

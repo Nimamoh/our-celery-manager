@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from our_celery_manager.app.models.ocm.clone import CloneEvent
+from our_celery_manager.models.ocm import CloneEvent
 
 import logging
 

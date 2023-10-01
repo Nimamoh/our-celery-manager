@@ -1,8 +1,20 @@
+import logging
+from pathlib import Path
 from dataclasses import dataclass
 from pydantic_settings import BaseSettings
-from . import _content_of_version_or
 
 from urllib.parse import urlparse
+
+logger = logging.getLogger(__name__)
+
+def _content_of_version_or(def_value = "¯\_(ツ)_/¯"):
+    try:
+        version_path = Path(__file__).parent / "VERSION"
+        with version_path.open() as f:
+            return f.read().strip()
+    except Exception as e:
+        logger.warn(f"Could not read VERSION file: {e}. Version will be set to {def_value}")
+        return def_value
 
 class Settings(BaseSettings):
 
@@ -21,18 +33,23 @@ class Settings(BaseSettings):
     backend: str
     """The backend url to retrieve task results"""
 
+    debug: bool = False
+    """Debug mode which control some things like printing SQL requests."""
     
     def hiding_passwords(self):
-        self.application_name = _hide_url_password(self.application_name)
-        self.backend = _hide_url_password(self.backend)
-        return self
+        _settings = Settings()
+        _settings.application_name = _hide_url_password(_settings.application_name)
+        _settings.backend = _hide_url_password(_settings.backend)
+        _settings.broker = _hide_url_password(_settings.broker)
+        return _settings
     
     def db_connstring(self):
-        """Deduce db connection string from backend string (remove prefixed db+)"""
+        """Deduce db connection string from backend string (remove prefixed db+ and options after ?)"""
         prefix = 'db+'
         if not self.backend.startswith(prefix):
             raise ValueError(f"result backend must be in form {prefix}")
-        return self.backend.removeprefix(prefix)
+        connstr = self.backend.removeprefix(prefix)
+        return connstr
 
 def _hide_url_password(s):
     if not isinstance(s, str):

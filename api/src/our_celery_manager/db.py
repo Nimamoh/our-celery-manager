@@ -2,8 +2,8 @@ import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from .settings import settings
-from .models import Base
+from our_celery_manager.common.settings import settings
+from our_celery_manager.models import Base
 
 logger = logging.getLogger(__name__)
 

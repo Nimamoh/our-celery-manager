@@ -1,6 +1,6 @@
 from sqlalchemy import DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column
-from our_celery_manager.app.models import Base
+from .. import Base
 
 class CloneEvent(Base):
 

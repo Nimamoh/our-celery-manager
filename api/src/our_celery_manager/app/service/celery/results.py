@@ -7,7 +7,7 @@ from . import logger
 from sqlalchemy.orm import Session
 
 from our_celery_manager.app.service.celery.model import SearchField, SortDirection, SortField
-from our_celery_manager.app.models.ocm.clone import CloneEvent
+from our_celery_manager.models.ocm import CloneEvent
 from celery.backends.database.models import TaskExtended
 
 
@@ -18,7 +18,7 @@ from sqlalchemy.orm import aliased
 
 from celery.result import AsyncResult
 
-from our_celery_manager.app.tasks_queue import app as celeryapp
+from our_celery_manager.app.celery import celeryapp
 
 TaskIdTable = Tuple[str, str, str]
 

@@ -1,8 +1,8 @@
 from celery import Celery
 
-from .settings import settings
+from ..common.settings import settings
 
-app: Celery = Celery(
+celeryapp: Celery = Celery(
     "tasks",
     broker=settings.broker,
     backend=settings.backend,

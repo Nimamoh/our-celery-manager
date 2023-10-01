@@ -7,11 +7,11 @@ from sqlalchemy import delete
 from datetime import datetime, timedelta
 
 from celery.backends.database.models import TaskExtended
+from our_celery_manager.models.ocm import CloneEvent
 from celery import Celery
 
-from .settings import settings
-from .models.ocm.clone import CloneEvent
-from .db import SessionLocal
+from our_celery_manager.common.settings import settings
+from ..db import SessionLocal # TODO: ici
 
 celery = Celery(
     "tasks", broker=settings.broker, backend=settings.backend, result_extended=True

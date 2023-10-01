@@ -19,7 +19,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
-from our_celery_manager.app.db import ocm_metadata
+from our_celery_manager.db import ocm_metadata
 target_metadata = ocm_metadata()
 
 # other values from the config, defined by the needs of env.py,
@@ -32,7 +32,7 @@ target_metadata = ocm_metadata()
 # and select only application db objects
 #
 schema_name = "ocm"
-from our_celery_manager.app.settings import settings
+from our_celery_manager.common.settings import settings
 if settings.backend:
     display_connstring = settings.hiding_passwords().db_connstring()
     connstring = settings.db_connstring()

@@ -1,22 +1,24 @@
-from .startup_checks import (
-    pre_startup_check,
-    pre_startup_db_migration,
-    pre_startup_logconf,
-)
-pre_startup_check()
-pre_startup_db_migration()
-pre_startup_logconf()
-
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Annotated
 
 from sqlalchemy.orm import Session
 
-from fastapi import FastAPI, Query, Request, Depends, Response
+from fastapi import (
+    FastAPI,
+    Query,
+    Request,
+    Depends,
+    Response,
+    WebSocket,
+    WebSocketDisconnect,
+)
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.staticfiles import StaticFiles
 from our_celery_manager.app.models.dtos.tasks import ListResult
+from our_celery_manager.app import celery_events_subject
+from our_celery_manager.app.service.celery.cluster_listener import RelayToWebsocket
 
 from our_celery_manager.app.service.celery.results import (
     clone_and_send_task,
@@ -24,16 +26,25 @@ from our_celery_manager.app.service.celery.results import (
 )
 
 from .service.celery.model import SearchField, SortField
-from .settings import SettingsApiResponse, settings
+from our_celery_manager.common.settings import SettingsApiResponse, settings
 
-from .db import SessionLocal
+from our_celery_manager.db import SessionLocal
 
 import logging
 
 logger = logging.getLogger(__name__)
 logger.info("Application up and running 💪")
 
-app = FastAPI(root_path=settings.root_path)
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    yield
+    logger.info(f"🧹 cleaning up")
+    celery_events_subject.close()
+    logger.info(f"🧹 cleaned up")
+
+
+app = FastAPI(root_path=settings.root_path, lifespan=lifespan)
 
 
 def get_db():
@@ -83,6 +94,25 @@ async def clone_and_send(request: Request, id: str, session: Session = Depends(g
     """Clone la tâche et la renvoie sur le broker"""
     r = clone_and_send_task(id, session)
     return r
+
+
+@app.websocket("/celery-events")
+async def websocket_endpoint(websocket: WebSocket):
+    try:
+        await websocket.accept()
+        relay = RelayToWebsocket(websocket)
+        celery_events_subject.add_observer(relay)
+        while True:
+            _ = await websocket.receive_text()
+    except WebSocketDisconnect as disconnection:
+        logger.debug(f"Socket disconnected", exc_info=disconnection)
+        raise
+    except Exception as e:
+        logger.exception(e, exc_info=e, stack_info=True)
+        raise
+    finally:
+        celery_events_subject.remove_observer(relay)
+        await websocket.close()
 
 
 static_path = Path(__file__).parent / "static"

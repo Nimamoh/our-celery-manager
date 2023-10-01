@@ -9,6 +9,7 @@ dependencies = [
     "celery[redis,sqlalchemy] ~= 5.2",
     "sqlalchemy[pymysql] ~= 2.0",
     "alembic ~= 1.12",
+    "websockets ~= 11.0",
 
     "typer ~= 0.9",
 

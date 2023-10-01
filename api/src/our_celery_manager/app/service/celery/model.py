@@ -3,7 +3,7 @@ from datetime import datetime
 from enum import StrEnum
 
 from celery.backends.database.models import TaskExtended
-from our_celery_manager.app.models.ocm.clone import CloneEvent
+from our_celery_manager.models.ocm import CloneEvent
 
 from sqlalchemy.orm import aliased
 from sqlalchemy import func
