@@ -94,6 +94,7 @@ def run_migrations_online() -> None:
         )
 
         with context.begin_transaction():
+            context.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_name}")
             context.run_migrations()
 
 
