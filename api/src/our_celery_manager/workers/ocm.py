@@ -21,8 +21,12 @@ celery = Celery(
 logger = logging.getLogger(__name__)
 
 @celery.task(name="ocm_cleanup_backend")
-def ocm_cleanup_backend(being_older_than_days: int, only_success=True):
+def ocm_cleanup_backend(being_older_than_days: int = 0, only_success=True):
     """Task similar to celery cleanup backend except it accepts more options"""
+    
+    if being_older_than_days == 0:
+        being_older_than_days = 365
+        logger.info(f"Defaulting to clean up events older than {being_older_than_days} days")
 
     result_backend_addr = settings.hiding_passwords().backend
 
