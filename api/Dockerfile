@@ -14,7 +14,7 @@ RUN pip install -r requirements.txt
 RUN apk --purge del .build-deps
 
 ARG VERSION=development
-RUN echo "$VERSION" > /code/src/our_celery_manager/app/VERSION
+RUN echo "$VERSION" > /code/src/our_celery_manager/common/VERSION
 
 RUN pip install .
 
