@@ -7,6 +7,7 @@ from sqlalchemy import delete
 from datetime import datetime, timedelta
 
 from celery.backends.database.models import TaskExtended
+from celery.backends.database import session_cleanup
 from our_celery_manager.models.ocm import CloneEvent
 from celery import Celery
 
@@ -41,10 +42,12 @@ def ocm_cleanup_backend(being_older_than_days: int, only_success=True):
         .where(TaskExtended.status == SUCCESS)
         .where(TaskExtended.date_done < older_than)
     )
+
     session = celery.backend.ResultSession()
-    result = session.execute(stmt)
-    session.commit()
-    logger.info(f"Successfully deleted {result.rowcount} tasks")
+    with session_cleanup(session):
+        result = session.execute(stmt)
+        session.commit()
+        logger.info(f"Successfully deleted {result.rowcount} tasks")
 
     _ocm_cleanup_cloning_events(older_than)
 
@@ -60,7 +63,8 @@ def _ocm_cleanup_cloning_events(older_than: datetime):
     )
 
     session = SessionLocal()
-    result = session.execute(stmt)
-    session.commit()
-    logger.info(f"Successfully deleted {result.rowcount} events")
+    with session_cleanup(session):
+        result = session.execute(stmt)
+        session.commit()
+        logger.info(f"Successfully deleted {result.rowcount} events")
 
