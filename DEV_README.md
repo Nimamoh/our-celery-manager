@@ -111,5 +111,6 @@ docker-compose up -d
 - [ ] Filter by day or date range.
 - [ ] Select and add in bulk.
 - [x] Know the maximum number of pages.
+- [x] delete a task
 - [ ] Task hierarchy
   - [ ] Currently not possible as the parent id is not persisted: [issue](https://github.com/celery/celery/issues/5824)
