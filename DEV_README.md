@@ -69,8 +69,8 @@ Start the API locally and run the following command:
 # ⚠ this is fish shell
 cd front/
 rm -rf src/generated
-docker run --rm --network="host" --add-host host.docker.internal:host-gateway -v (pwd)":/local" openapitools/openapi-generator-cli generate \
-        -i http://host.docker.internal:8000/openapi.json \
+docker run --rm --network host -v (pwd)":/local" openapitools/openapi-generator-cli generate \
+        -i http://localhost:8000/openapi.json \
         -g typescript-fetch \
         -p modelPropertyNaming=original \
         -o /local/src/generated/api
