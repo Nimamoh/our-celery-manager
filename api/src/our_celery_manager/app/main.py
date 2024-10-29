@@ -22,6 +22,7 @@ from our_celery_manager.app.service.celery.cluster_listener import RelayToWebsoc
 
 from our_celery_manager.app.service.celery.results import (
     clone_and_send_task,
+    do_delete_result_task,
     result_page,
 )
 
@@ -93,6 +94,17 @@ async def task_result_page(
 async def clone_and_send(request: Request, id: str, session: Session = Depends(get_db)):
     """Clone la tâche et la renvoie sur le broker"""
     r = clone_and_send_task(id, session)
+    return r
+
+
+@app.delete("/results/task/{task_id}")
+async def delete_result(
+    request: Request,
+    task_id: str,
+    session: Session = Depends(get_db),
+):
+    """Supprime la tâche du result backend"""
+    r = do_delete_result_task(task_id, session)
     return r
 
 

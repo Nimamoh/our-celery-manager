@@ -13,7 +13,7 @@ from celery.backends.database.models import TaskExtended
 
 from our_celery_manager.app.models.dtos.tasks import TaskResult as TaskResultDto, ListResultRow, ListResult
 
-from sqlalchemy import Select, asc, desc, join, select, func, String
+from sqlalchemy import Select, asc, delete, desc, join, select, func, String
 from sqlalchemy.orm import aliased
 
 from celery.result import AsyncResult
@@ -181,3 +181,15 @@ def clone_and_send_task(id: str, session: Session):
 
     OcmTaskMetaService.make(session).record_cloned(task_id, t.task_id)
     logger.info(f"Tâche {task_id} cloné et envoyé, nouvelle tâche: {t.task_id}")
+
+def do_delete_result_task(task_id: str, session: Session):
+    with session.begin() as tr :
+        try:
+            stmt = delete(TaskExtended).where(TaskExtended.task_id == task_id)
+            session.execute(stmt)
+            tr.commit()
+        except Exception as e:
+            logger.exception(f"Error while trying to delete task {task_id}", exc_info=e)
+            tr.rollback()
+        finally:
+            tr.close()
