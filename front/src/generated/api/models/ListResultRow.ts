@@ -12,12 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
+import { mapValues } from '../runtime';
 import type { Status } from './Status';
 import {
     StatusFromJSON,
     StatusFromJSONTyped,
     StatusToJSON,
+    StatusToJSONTyped,
 } from './Status';
 
 /**
@@ -28,16 +29,16 @@ import {
 export interface ListResultRow {
     /**
      * 
-     * @type {any}
+     * @type {string}
      * @memberof ListResultRow
      */
-    task_id: any | null;
+    task_id: string;
     /**
      * 
-     * @type {any}
+     * @type {string}
      * @memberof ListResultRow
      */
-    name: any | null;
+    name: string | null;
     /**
      * 
      * @type {Status}
@@ -46,65 +47,65 @@ export interface ListResultRow {
     status: Status;
     /**
      * 
-     * @type {any}
+     * @type {Date}
      * @memberof ListResultRow
      */
-    date_done: any | null;
+    date_done: Date | null;
     /**
      * 
-     * @type {any}
+     * @type {string}
      * @memberof ListResultRow
      */
-    traceback: any | null;
+    traceback: string | null;
     /**
      * 
-     * @type {any}
+     * @type {string}
      * @memberof ListResultRow
      */
-    queue: any | null;
+    queue: string | null;
     /**
      * 
-     * @type {any}
+     * @type {Blob}
      * @memberof ListResultRow
      */
-    args: any | null;
+    args: Blob | null;
     /**
      * 
-     * @type {any}
+     * @type {Blob}
      * @memberof ListResultRow
      */
-    kwargs: any | null;
+    kwargs: Blob | null;
     /**
      * 
-     * @type {any}
+     * @type {string}
      * @memberof ListResultRow
      */
-    result: any | null;
+    result: string | null;
     /**
      * 
-     * @type {any}
+     * @type {Array<ListResultRow>}
      * @memberof ListResultRow
      */
-    clones: any | null;
+    clones: Array<ListResultRow>;
 }
+
+
 
 /**
  * Check if a given object implements the ListResultRow interface.
  */
-export function instanceOfListResultRow(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "task_id" in value;
-    isInstance = isInstance && "name" in value;
-    isInstance = isInstance && "status" in value;
-    isInstance = isInstance && "date_done" in value;
-    isInstance = isInstance && "traceback" in value;
-    isInstance = isInstance && "queue" in value;
-    isInstance = isInstance && "args" in value;
-    isInstance = isInstance && "kwargs" in value;
-    isInstance = isInstance && "result" in value;
-    isInstance = isInstance && "clones" in value;
-
-    return isInstance;
+export function instanceOfListResultRow(value: object): value is ListResultRow {
+    if (!('task_id' in value) || value['task_id'] === undefined) return false;
+    if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('status' in value) || value['status'] === undefined) return false;
+    if (!('date_done' in value) || value['date_done'] === undefined) return false;
+    if (!('traceback' in value) || value['traceback'] === undefined) return false;
+    if (!('queue' in value) || value['queue'] === undefined) return false;
+    if (!('args' in value) || value['args'] === undefined) return false;
+    if (!('kwargs' in value) || value['kwargs'] === undefined) return false;
+    if (!('result' in value) || value['result'] === undefined) return false;
+    if (!('clones' in value) || value['clones'] === undefined) return false;
+    return true;
 }
 
 export function ListResultRowFromJSON(json: any): ListResultRow {
@@ -112,7 +113,7 @@ export function ListResultRowFromJSON(json: any): ListResultRow {
 }
 
 export function ListResultRowFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListResultRow {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
@@ -120,35 +121,37 @@ export function ListResultRowFromJSONTyped(json: any, ignoreDiscriminator: boole
         'task_id': json['task_id'],
         'name': json['name'],
         'status': StatusFromJSON(json['status']),
-        'date_done': json['date_done'],
+        'date_done': (json['date_done'] == null ? null : new Date(json['date_done'])),
         'traceback': json['traceback'],
         'queue': json['queue'],
         'args': json['args'],
         'kwargs': json['kwargs'],
         'result': json['result'],
-        'clones': json['clones'],
+        'clones': ((json['clones'] as Array<any>).map(ListResultRowFromJSON)),
     };
 }
 
-export function ListResultRowToJSON(value?: ListResultRow | null): any {
-    if (value === undefined) {
-        return undefined;
+  export function ListResultRowToJSON(json: any): ListResultRow {
+      return ListResultRowToJSONTyped(json, false);
+  }
+
+  export function ListResultRowToJSONTyped(value?: ListResultRow | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'task_id': value.task_id,
-        'name': value.name,
-        'status': StatusToJSON(value.status),
-        'date_done': value.date_done,
-        'traceback': value.traceback,
-        'queue': value.queue,
-        'args': value.args,
-        'kwargs': value.kwargs,
-        'result': value.result,
-        'clones': value.clones,
+        'task_id': value['task_id'],
+        'name': value['name'],
+        'status': StatusToJSON(value['status']),
+        'date_done': (value['date_done'] == null ? null : (value['date_done'] as any).toISOString()),
+        'traceback': value['traceback'],
+        'queue': value['queue'],
+        'args': value['args'],
+        'kwargs': value['kwargs'],
+        'result': value['result'],
+        'clones': ((value['clones'] as Array<any>).map(ListResultRowToJSON)),
     };
 }
 

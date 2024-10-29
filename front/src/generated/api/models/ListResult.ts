@@ -12,7 +12,15 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
+import { mapValues } from '../runtime';
+import type { ListResultRow } from './ListResultRow';
+import {
+    ListResultRowFromJSON,
+    ListResultRowFromJSONTyped,
+    ListResultRowToJSON,
+    ListResultRowToJSONTyped,
+} from './ListResultRow';
+
 /**
  * 
  * @export
@@ -21,41 +29,39 @@ import { exists, mapValues } from '../runtime';
 export interface ListResult {
     /**
      * 
-     * @type {any}
+     * @type {number}
      * @memberof ListResult
      */
-    total: any | null;
+    total: number;
     /**
      * 
-     * @type {any}
+     * @type {number}
      * @memberof ListResult
      */
-    page_number: any | null;
+    page_number: number;
     /**
      * 
-     * @type {any}
+     * @type {number}
      * @memberof ListResult
      */
-    page_size: any | null;
+    page_size: number;
     /**
      * 
-     * @type {any}
+     * @type {Array<ListResultRow>}
      * @memberof ListResult
      */
-    data: any | null;
+    data: Array<ListResultRow>;
 }
 
 /**
  * Check if a given object implements the ListResult interface.
  */
-export function instanceOfListResult(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "total" in value;
-    isInstance = isInstance && "page_number" in value;
-    isInstance = isInstance && "page_size" in value;
-    isInstance = isInstance && "data" in value;
-
-    return isInstance;
+export function instanceOfListResult(value: object): value is ListResult {
+    if (!('total' in value) || value['total'] === undefined) return false;
+    if (!('page_number' in value) || value['page_number'] === undefined) return false;
+    if (!('page_size' in value) || value['page_size'] === undefined) return false;
+    if (!('data' in value) || value['data'] === undefined) return false;
+    return true;
 }
 
 export function ListResultFromJSON(json: any): ListResult {
@@ -63,7 +69,7 @@ export function ListResultFromJSON(json: any): ListResult {
 }
 
 export function ListResultFromJSONTyped(json: any, ignoreDiscriminator: boolean): ListResult {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
@@ -71,23 +77,25 @@ export function ListResultFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'total': json['total'],
         'page_number': json['page_number'],
         'page_size': json['page_size'],
-        'data': json['data'],
+        'data': ((json['data'] as Array<any>).map(ListResultRowFromJSON)),
     };
 }
 
-export function ListResultToJSON(value?: ListResult | null): any {
-    if (value === undefined) {
-        return undefined;
+  export function ListResultToJSON(json: any): ListResult {
+      return ListResultToJSONTyped(json, false);
+  }
+
+  export function ListResultToJSONTyped(value?: ListResult | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'total': value.total,
-        'page_number': value.page_number,
-        'page_size': value.page_size,
-        'data': value.data,
+        'total': value['total'],
+        'page_number': value['page_number'],
+        'page_size': value['page_size'],
+        'data': ((value['data'] as Array<any>).map(ListResultRowToJSON)),
     };
 }
 

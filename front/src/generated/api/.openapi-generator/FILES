@@ -8,5 +8,6 @@ models/ListResultRow.ts
 models/SettingsApiResponse.ts
 models/Status.ts
 models/ValidationError.ts
+models/ValidationErrorLocInner.ts
 models/index.ts
 runtime.ts

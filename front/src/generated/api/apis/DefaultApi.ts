@@ -29,14 +29,18 @@ import {
 } from '../models/index';
 
 export interface CloneAndSendCloneAndSendIdPostRequest {
-    id: any;
+    id: string;
+}
+
+export interface DeleteResultResultsTaskTaskIdDeleteRequest {
+    taskId: string;
 }
 
 export interface TaskResultPageResultsPageGetRequest {
-    n?: any;
-    size?: any;
-    sort?: any;
-    search?: any;
+    n?: number;
+    size?: number;
+    sort?: Array<string>;
+    search?: Array<string>;
 }
 
 /**
@@ -49,8 +53,11 @@ export class DefaultApi extends runtime.BaseAPI {
      * Clone And Send
      */
     async cloneAndSendCloneAndSendIdPostRaw(requestParameters: CloneAndSendCloneAndSendIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling cloneAndSendCloneAndSendIdPost.');
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling cloneAndSendCloneAndSendIdPost().'
+            );
         }
 
         const queryParameters: any = {};
@@ -58,7 +65,7 @@ export class DefaultApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/clone_and_send/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: `/clone_and_send/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -77,6 +84,45 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async cloneAndSendCloneAndSendIdPost(requestParameters: CloneAndSendCloneAndSendIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
         const response = await this.cloneAndSendCloneAndSendIdPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Supprime la tâche du result backend
+     * Delete Result
+     */
+    async deleteResultResultsTaskTaskIdDeleteRaw(requestParameters: DeleteResultResultsTaskTaskIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+        if (requestParameters['taskId'] == null) {
+            throw new runtime.RequiredError(
+                'taskId',
+                'Required parameter "taskId" was null or undefined when calling deleteResultResultsTaskTaskIdDelete().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/results/task/{task_id}`.replace(`{${"task_id"}}`, encodeURIComponent(String(requestParameters['taskId']))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<any>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
+    }
+
+    /**
+     * Supprime la tâche du result backend
+     * Delete Result
+     */
+    async deleteResultResultsTaskTaskIdDelete(requestParameters: DeleteResultResultsTaskTaskIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
+        const response = await this.deleteResultResultsTaskTaskIdDeleteRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -112,20 +158,20 @@ export class DefaultApi extends runtime.BaseAPI {
     async taskResultPageResultsPageGetRaw(requestParameters: TaskResultPageResultsPageGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListResult>> {
         const queryParameters: any = {};
 
-        if (requestParameters.n !== undefined) {
-            queryParameters['n'] = requestParameters.n;
+        if (requestParameters['n'] != null) {
+            queryParameters['n'] = requestParameters['n'];
         }
 
-        if (requestParameters.size !== undefined) {
-            queryParameters['size'] = requestParameters.size;
+        if (requestParameters['size'] != null) {
+            queryParameters['size'] = requestParameters['size'];
         }
 
-        if (requestParameters.sort !== undefined) {
-            queryParameters['sort'] = requestParameters.sort;
+        if (requestParameters['sort'] != null) {
+            queryParameters['sort'] = requestParameters['sort'];
         }
 
-        if (requestParameters.search !== undefined) {
-            queryParameters['search'] = requestParameters.search;
+        if (requestParameters['search'] != null) {
+            queryParameters['search'] = requestParameters['search'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

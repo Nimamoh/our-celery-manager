@@ -12,22 +12,34 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
+
 /**
  * 
  * @export
- * @interface Status
  */
-export interface Status {
-}
+export const Status = {
+    Pending: 'PENDING',
+    Received: 'RECEIVED',
+    Started: 'STARTED',
+    Success: 'SUCCESS',
+    Failure: 'FAILURE',
+    Revoked: 'REVOKED',
+    Rejected: 'REJECTED',
+    Retry: 'RETRY',
+    Ignored: 'IGNORED'
+} as const;
+export type Status = typeof Status[keyof typeof Status];
 
-/**
- * Check if a given object implements the Status interface.
- */
-export function instanceOfStatus(value: object): boolean {
-    let isInstance = true;
 
-    return isInstance;
+export function instanceOfStatus(value: any): boolean {
+    for (const key in Status) {
+        if (Object.prototype.hasOwnProperty.call(Status, key)) {
+            if (Status[key as keyof typeof Status] === value) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 export function StatusFromJSON(json: any): Status {
@@ -35,10 +47,14 @@ export function StatusFromJSON(json: any): Status {
 }
 
 export function StatusFromJSONTyped(json: any, ignoreDiscriminator: boolean): Status {
-    return json;
+    return json as Status;
 }
 
 export function StatusToJSON(value?: Status | null): any {
-    return value;
+    return value as any;
+}
+
+export function StatusToJSONTyped(value: any, ignoreDiscriminator: boolean): Status {
+    return value as Status;
 }
 

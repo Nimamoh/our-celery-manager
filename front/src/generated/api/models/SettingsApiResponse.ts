@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime';
+import { mapValues } from '../runtime';
 /**
  * 
  * @export
@@ -21,41 +21,39 @@ import { exists, mapValues } from '../runtime';
 export interface SettingsApiResponse {
     /**
      * 
-     * @type {any}
+     * @type {string}
      * @memberof SettingsApiResponse
      */
-    application_name: any | null;
+    application_name: string;
     /**
      * 
-     * @type {any}
+     * @type {string}
      * @memberof SettingsApiResponse
      */
-    version: any | null;
+    version: string;
     /**
      * 
-     * @type {any}
+     * @type {string}
      * @memberof SettingsApiResponse
      */
-    broker: any | null;
+    broker: string | null;
     /**
      * 
-     * @type {any}
+     * @type {string}
      * @memberof SettingsApiResponse
      */
-    backend: any | null;
+    backend: string | null;
 }
 
 /**
  * Check if a given object implements the SettingsApiResponse interface.
  */
-export function instanceOfSettingsApiResponse(value: object): boolean {
-    let isInstance = true;
-    isInstance = isInstance && "application_name" in value;
-    isInstance = isInstance && "version" in value;
-    isInstance = isInstance && "broker" in value;
-    isInstance = isInstance && "backend" in value;
-
-    return isInstance;
+export function instanceOfSettingsApiResponse(value: object): value is SettingsApiResponse {
+    if (!('application_name' in value) || value['application_name'] === undefined) return false;
+    if (!('version' in value) || value['version'] === undefined) return false;
+    if (!('broker' in value) || value['broker'] === undefined) return false;
+    if (!('backend' in value) || value['backend'] === undefined) return false;
+    return true;
 }
 
 export function SettingsApiResponseFromJSON(json: any): SettingsApiResponse {
@@ -63,7 +61,7 @@ export function SettingsApiResponseFromJSON(json: any): SettingsApiResponse {
 }
 
 export function SettingsApiResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): SettingsApiResponse {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
@@ -75,19 +73,21 @@ export function SettingsApiResponseFromJSONTyped(json: any, ignoreDiscriminator:
     };
 }
 
-export function SettingsApiResponseToJSON(value?: SettingsApiResponse | null): any {
-    if (value === undefined) {
-        return undefined;
+  export function SettingsApiResponseToJSON(json: any): SettingsApiResponse {
+      return SettingsApiResponseToJSONTyped(json, false);
+  }
+
+  export function SettingsApiResponseToJSONTyped(value?: SettingsApiResponse | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'application_name': value.application_name,
-        'version': value.version,
-        'broker': value.broker,
-        'backend': value.backend,
+        'application_name': value['application_name'],
+        'version': value['version'],
+        'broker': value['broker'],
+        'backend': value['backend'],
     };
 }
 

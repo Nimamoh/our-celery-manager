@@ -31,7 +31,7 @@ const makeMetaRows = (except: string[] = []) => {
         { field: 'traceback', header: 'Traceback', sortable: true, hidden: false, disableHideable: true },
         { field: 'result', header: 'Result', sortable: true, hidden: true },
         { field: 'status', header: 'Status', sortable: true, hidden: false },
-        { field: 'clones', header: 'Number of clones', hidden: false, disableHideable: true },
+        { field: 'clones', header: 'Number of replays', hidden: false, disableHideable: true },
     ]
 
     rows = rows.filter(row => !except.includes(row.field))
@@ -56,7 +56,7 @@ const page_get_request: Ref<PageGetRequest> = ref({ n: 0, size: 10 })
 const replayable = (task: ListResultRow) => {
     return task.name != null;
 }
-const currently_cloning_and_sending = ref(false);
+const currently_sending_command = ref(false);
 
 const onCloneAndSend = async (task: ListResultRow) => {
     confirm.require({
@@ -65,9 +65,10 @@ const onCloneAndSend = async (task: ListResultRow) => {
         reject: () => { },
     })
 }
+
 const _cloneAndReplay = async (task: ListResultRow) => {
 
-    currently_cloning_and_sending.value = true;
+    currently_sending_command.value = true;
     try {
         await api.cloneAndSendCloneAndSendIdPost({ id: task.task_id })
         toast.add({
@@ -85,7 +86,38 @@ const _cloneAndReplay = async (task: ListResultRow) => {
             life: 10000
         })
     } finally {
-        currently_cloning_and_sending.value = false;
+        currently_sending_command.value = false;
+    }
+}
+
+const onDeleteTask = async (task: ListResultRow) => {
+    confirm.require({
+        message: `Do you really want to delete task ${task.task_id} ? (replays won't be affected)`,
+        accept: () => _deleteTask(task),
+        reject: () => {},
+    })
+}
+const _deleteTask = async (task: ListResultRow) => {
+
+    currently_sending_command.value = true;
+    try {
+        await api.deleteResultResultsTaskTaskIdDelete({ taskId: task.task_id })
+        toast.add({
+            severity: 'success',
+            summary: 'Task deleted',
+            detail: `Task ${task.task_id} deleted from result backend`,
+            life: 10000
+        })
+        await load();
+    } catch (error) {
+        toast.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: `Impossible to delete task ${task.task_id}`,
+            life: 10000
+        })
+    } finally {
+        currently_sending_command.value = false;
     }
 }
 
@@ -208,9 +240,19 @@ await onSort({ multiSortMeta }) // XXX: we initially sort on date_done
 
             <Column>
                 <template #body="{ data }">
-                    <Button v-bind:disabled="!replayable(data) || currently_cloning_and_sending"
+                    <Button v-bind:disabled="!replayable(data) || currently_sending_command"
                         @click="onCloneAndSend(data)">
-                        Clone and send
+                        Replay
+                    </Button>
+                </template>
+
+            </Column>
+            
+            <Column>
+                <template #body="{ data }">
+                    <Button v-bind:disabled="currently_sending_command" severity="danger"
+                        @click="onDeleteTask(data)">
+                        Delete
                     </Button>
                 </template>
             </Column>
