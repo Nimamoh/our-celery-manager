@@ -47,7 +47,7 @@ def ocm_cleanup_backend(being_older_than_days: int = 0, only_success=True):
         .where(TaskExtended.date_done < older_than)
     )
 
-    session = celery.backend.ResultSession()
+    session = SessionLocal()
     with session_cleanup(session):
         result = session.execute(stmt)
         session.commit()

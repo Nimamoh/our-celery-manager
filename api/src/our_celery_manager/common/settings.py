@@ -44,7 +44,7 @@ class Settings(BaseSettings):
         return _settings
     
     def db_connstring(self):
-        """Deduce db connection string from backend string (remove prefixed db+ and options after ?)"""
+        """Deduce db connection string from backend string (remove prefixed db+)"""
         prefix = 'db+'
         if not self.backend.startswith(prefix):
             raise ValueError(f"result backend must be in form {prefix}")
